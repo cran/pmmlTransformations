@@ -1,0 +1,15 @@
+92fd7e5a6ed085c5769942819ed6b5d6 *DESCRIPTION
+8b54e5a89fbda3af5e077053d40bec76 *NAMESPACE
+4041f6c966f53858ab5f681eabdf949b *R/Initialize.R
+bb4b4540c98bd08fdedd7269d0b73c92 *R/MapXform.R
+5ecd0e63aeedf3b0bff92aa33ad0beee *R/MinMaxXform.R
+7cd92011c848b8de0bd2c7c44ff2d4b2 *R/NormDiscreteXform.R
+ebfe9ca33b50c92f071f00bc02031009 *R/WrapData.R
+62714fd94d453e4c91155671715c03ea *R/ZScoreXform.R
+3ecffae41490de450af325f74bed0f35 *man/Initialize.Rd
+93a6ce6ef55d40c6ef5a1203feddb29d *man/MapXform.Rd
+5d7ff2630c8e06cae39214b227a17c77 *man/MinMaxXform.Rd
+94185aadc2683202c7444921560d98ef *man/NormDiscreteXform.Rd
+00b306dfaa925dfb33539af0ab9659e6 *man/WrapData.Rd
+5836a62234787f486a220d13782a5680 *man/ZScoreXform.Rd
+5328dd38ef8be493eea19e42fe592ccb *man/pmmlTransformations-package.Rd
