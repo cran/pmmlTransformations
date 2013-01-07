@@ -1,5 +1,27 @@
+# This file is part of the pmmlTransformations package 
+#
+# This part of the PMML Transformation package handles z-score transforms;
+# expressing numerical values in units of number of standard deviations from the mean
+#
+# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+#
+# Copyright (c) 2013 Zementis, Inc.
+#
+# The pmmlTransformations package is free: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# The pmmlTransformations package is distributed in the hope that it will 
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+############################################################################
+
 ZScoreXform <-
-function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
+function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 {
 
 	colmn <- NULL
@@ -14,12 +36,16 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
         sampleMin <- NA
         sampleMax <- NA
 	fieldsMap <- NA 
-	defaultValue <- NA
+	default <- NA
  	missingValue <- NA
 
+	if(!is.na(defaultValue))
+	{
+	  default <- defaultValue
+	}
         if(!is.na(mapMissingTo))
         {
-          missingValue <- as.character(mapMissingTo)
+          missingValue <- mapMissingTo
         }
 
 	newBoxData <- Initialize(boxdata)
@@ -28,7 +54,6 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 
 	if(is.na(xformInfo))
 	{
-		missingValue <- NA
 	# transform all numeric fields if no arguments given
 		for(i in 1:newBoxData$ncols)
 		{
@@ -42,7 +67,7 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 				transform <- "zxform"
 				origFieldName <- names(newBoxData$data)[i]
                                 derivedFieldName <- paste("derived_",names(newBoxData$data)[i],sep="")
-                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
 
 				newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			} 
@@ -59,12 +84,10 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 		{
 	   		st <- strsplit(coln,"-->")
 		}
-                st[[1]][1] <- gsub("^ *","",st[[1]][1])
-                st[[1]][2] <- gsub(" *$","",st[[1]][2])
-                if(!is.na(st[[1]][2]))
-                {
-                        derivedFieldName <- st[[1]][2]
-                }
+                       if(!is.na(st[[1]][2]))
+                       {
+                               derivedFieldName <- st[[1]][2]
+                       }
 	   	colnm <- st[[1]][1]
 		if(grepl("column",colnm,ignore.case=TRUE))
 		{
@@ -90,9 +113,11 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 				dataType <- "numeric"
                                	type <- "derived"
 				origFieldName <- row.names(newBoxData$fieldData)[coln2]
-                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+
 
                                	newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
+
 			}
 		} else
 		{
@@ -110,12 +135,14 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 				origFieldName <- row.names(newBoxData$fieldData)[i]
 
 				transform <- "zxform"
-                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+
                                	newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			}
 		}
 	}
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
+        newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
 
 	# use scale function 
 	xformed <- scale(colmn,T,T)

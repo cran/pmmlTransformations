@@ -1,3 +1,24 @@
+# This file is part of the pmmlTransformations package 
+#
+# This part of the PMML Transformation package handles Mapping
+#
+# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+#
+# Copyright (c) 2013 Zementis, Inc.
+#
+# The pmmlTransformations package is free: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# The pmmlTransformations package is distributed in the hope that it will 
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+############################################################################
+
 MapXform <-
 function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 {
@@ -12,9 +33,9 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
         xformedMax <- NA
         centers <- NA
         scales <- NA
-	missing <- NA
+	missingValue <- NA
 	dataMatrix <- NULL
-	dflt <- NA
+	default <- NA
 
 	newBoxData <- Initialize(boxdata)
 
@@ -155,7 +176,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 #defaultValue=f,mapMissingTo=g
 	if(!is.na(defaultValue))
 	{
-	  defaultValue <- as.character(defaultValue)
+	  default <- as.character(defaultValue)
 	}
 	if(!is.na(mapMissingTo))
 	{
@@ -186,7 +207,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	transform <- "MapValues"
 	derivedFieldName <- outVal
 
-	suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,defaultValue,missingValue,row.names=derivedFieldName,check.names=FALSE))
+	suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
 
 	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
@@ -244,14 +265,14 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
          }
 
 	# no match found
-	 if(!match)
+	 if(!match && !is.na(default))
 	 {
 	  if(outDat == "numeric")
 	  {
-	   newcol <- rbind(newcol,as.numeric(defaultValue))
+	   newcol <- rbind(newcol,as.numeric(default))
 	  } else
 	  {
-	   newcol <- rbind(newcol,defaultValue)
+	   newcol <- rbind(newcol,default)
 	  }
 	 }
         }

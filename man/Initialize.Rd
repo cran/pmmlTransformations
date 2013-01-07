@@ -19,6 +19,9 @@ Initialize(inbox)
 \value{
    An R object containing information on the data to be transformed.
 }
+\author{
+Zementis, Inc. 
+}
 
 \seealso{
   \code{\link{WrapData}}

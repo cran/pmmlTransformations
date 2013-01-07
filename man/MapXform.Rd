@@ -16,7 +16,7 @@ MapXform(boxdata, xformInfo, table, defaultValue=NA, mapMissingTo=NA, ...)
   }
   \item{xformInfo}{specification of details of the transformation.}
   \item{table}{name of external CSV file containing the map from input to output values.}
-  \item{defaultValue}{value to be given to the transformed variable if the input values do not match any given map.}
+  \item{defaultValue}{value to be given to the transformed variable if the value of the input variable is missing.}
   \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.}
   \item{\dots}{
     further arguments passed to or from other methods.
@@ -48,10 +48,13 @@ R object containing the raw data, the transformed data and data statistics.
 \references{
 Details on commonly used datasets, including the Audit data set: \url{http://www.dmg.org/pmml_examples}
 }
+\author{
+Zementis, Inc.
+}
 
 \seealso{
  \code{\link{WrapData}},
- \code{pmml}
+ \code{\link[pmml]{pmml}}
 }
 \examples{
 \dontrun{

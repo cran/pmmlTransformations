@@ -1,5 +1,27 @@
+# This file is part of the pmmlTransformations package 
+#
+# This part of the PMML Transformation package assigns dummy variables 
+# to categorical values 
+#
+# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+#
+# Copyright (c) 2013 Zementis, Inc.
+#
+# The pmmlTransformations package is free: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# The pmmlTransformations package is distributed in the hope that it will 
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+############################################################################
+
 NormDiscreteXform <-
-function(boxdata,inputVar,mapMissingTo=NA,...)
+function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
 {
 	map <- NULL
 	colmn <- NULL
@@ -12,7 +34,7 @@ function(boxdata,inputVar,mapMissingTo=NA,...)
         xformedMax <- NA
         centers <- NA
         scales <- NA
-	defaultValue <- NA
+	default <- NA
 	missingValue <- NA
 	newBoxData <- Initialize(boxdata)
 
@@ -35,8 +57,7 @@ function(boxdata,inputVar,mapMissingTo=NA,...)
 			{
 		   		st <- strsplit(coln,"-->")
 			}
-                        st[[1]][1] <- gsub("^ *","",st[[1]][1])
-                        st[[1]][2] <- gsub(" *$","",st[[1]][2])
+
 			initName <- st[[1]][1]
 			initName <- gsub("\\[","",initName)
 			initName <- gsub("\\]","",initName)
@@ -104,6 +125,10 @@ function(boxdata,inputVar,mapMissingTo=NA,...)
 	{
 	  missingValue <- as.character(mapMissingTo)
 	}
+	if(!is.na(defaultValue))
+	{
+	  default <- as.character(defaultValue)
+	}
 
 	# expected input format: initialName or [initialName]
 	input <- as.character(inputVar)
@@ -153,7 +178,7 @@ function(boxdata,inputVar,mapMissingTo=NA,...)
 	 fieldsMap <- list(as.character(catNames[i]))
  
 	 transform <- "NormDiscrete"
-	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,defaultValue,missingValue,row.names=derivedFieldName,check.names=FALSE)
+	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE)
 	 suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
 	 newcol <- NULL
@@ -179,6 +204,7 @@ function(boxdata,inputVar,mapMissingTo=NA,...)
      	 newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
 	}
         newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
+	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
 
      return(newBoxData)
 }

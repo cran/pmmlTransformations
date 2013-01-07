@@ -23,9 +23,12 @@ is then used by the transformation functions to calculate the derived variable v
 \references{
   PMML page describing various possible data transformations: \url{http://www.dmg.org/v4-1/Transformations.html} 
 }
+\author{
+Zementis, Inc. 
+}
 
 \seealso{
-  \code{pmml}
+  \code{\link[pmml]{pmml}}
 }
 \examples{
 # load the standard iris dataset, already built into R

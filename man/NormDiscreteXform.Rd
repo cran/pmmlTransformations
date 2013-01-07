@@ -10,7 +10,7 @@ variable 'catVar' with possible discrete values 'A' and 'B', this will create 2 
 'catVar_B' equals 0.  
 }
 \usage{
-NormDiscreteXform(boxdata, inputVar, mapMissingTo=NA, ...)
+NormDiscreteXform(boxdata, inputVar, defaultValue=NA, mapMissingTo=NA, ...)
 }
 \arguments{
   \item{boxdata}{
@@ -18,6 +18,9 @@ NormDiscreteXform(boxdata, inputVar, mapMissingTo=NA, ...)
    }
   \item{inputVar}{
    the input variable name in the data on which the transformation is to be applied 
+  }
+  \item{defaultValue}{
+   the default value of the transformed variable, to be indicated in the PMML file
   }
   \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.}
   \item{\dots}{
@@ -29,7 +32,7 @@ NormDiscreteXform(boxdata, inputVar, mapMissingTo=NA, ...)
 if the input variable value is missing, the NormDiscreteXform command including all 
 optional parameters is in the format:
 
-   inputVar="input_variable",mapMissingTo="missingVal"
+   inputVar="input_variable",defaultValue="defVal",mapMissingTo="missingVal"
 
  There are two methods in which the input variable can be referred to. The first method is to use its
 column number; given the 'data' attribute of the 'boxdata' object, this would be the order at
@@ -45,6 +48,9 @@ R object containing the raw data, the transformed data and data statistics.
 }
 \references{
  Details on commonly used datasets, including the Iris data set: \url{http://www.dmg.org/pmml_examples}
+}
+\author{
+Zementis, Inc.  
 }
 
 \seealso{

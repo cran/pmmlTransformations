@@ -1,5 +1,5 @@
 MinMaxXform <-
-function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
+function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 {
 	colmn <- NULL
 	newrow <- NULL
@@ -8,7 +8,7 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 	centers <- NA
         scales <- NA
 	fieldsMap <- NA
-	defaultValue <- NA
+	default <- NA
 	missingValue <- NA
 	colnamesGiven <- FALSE
         j <- 0
@@ -16,6 +16,15 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 	newBoxData <- Initialize(boxdata)
 
 	initLength <- nrow(newBoxData$fieldData)
+
+        if(!is.na(mapMissingTo))
+        {
+           missingValue <- as.character(mapMissingTo)
+        }
+        if(!is.na(defaultValue))
+        {
+          default <- as.character(defaultValue)
+        }
 
 	if(is.na(xformInfo))
 	{
@@ -45,19 +54,14 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 				sampleMin <- minimum
 				sampleMax <- maximum
 				transform <- "minmax"
-                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
 
                                 newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			} 
 		}
 	} else
 	{
-		if(!is.na(mapMissingTo))
-		{
-		   missingValue <- as.character(mapMissingTo)
-		}
-
-		# default values 
+		# default limits 
 		MIN <- 0
 		MAX <- 1
 
@@ -70,8 +74,7 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 		{
 	   		st <- strsplit(coln,"-->")
 		}
-                st[[1]][1] <- gsub("^ *","",st[[1]][1])
-                st[[1]][2] <- gsub(" *$","",st[[1]][2])
+
 		# origName either column-number or field name
 		origName <- st[[1]][1]
 		st2 <- NA
@@ -144,7 +147,7 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
                                	sampleMin <- minimum
                                	sampleMax <- maximum
 				transform <- "minmax"
-                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
 
                                	newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			}
@@ -152,6 +155,7 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 		{
 			i <- which(names(newBoxData$data) == colnm)
 			dataType <- newBoxData$fieldData[names(newBoxData$data)[i],"dataType"]
+
 			if(dataType == "numeric")
 			{
 				colmn <- cbind(colmn,newBoxData$data[,i])
@@ -176,15 +180,19 @@ function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
                                 sampleMin <- minimum
                                 sampleMax <- maximum
 				transform <- "minmax"
-                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,defaultValue,missingValue,row.names=derivedFieldName)
+                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
 
                                 newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
+
 			}
 		}
 	}
+
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
+	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
 
 	xformed <- scale(colmn,center,scale)
+
 
 	begin <- initLength+1
 	end <- nrow(newBoxData$fieldData)
