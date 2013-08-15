@@ -20,7 +20,7 @@ Initialize(inbox)
    An R object containing information on the data to be transformed.
 }
 \author{
-Zementis, Inc. 
+Tridivesh Jena, Zementis, Inc. 
 }
 
 \seealso{

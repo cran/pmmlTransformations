@@ -116,7 +116,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
         }
 
 # make variable name and data type rows to bind on data map later
-vname <- NULL	
+	vname <- NULL	
         vdtype <- NULL
         for(i in 1:length(inVal))
         {
@@ -162,21 +162,21 @@ vname <- NULL
 	if(!is.na(defaultValue))
 	{
 	  default <- as.character(defaultValue)
+          if(!((defaultValue==1) || (defaultValue==0) || toupper(defaultValue)==TRUE || toupper(defaultValue)==FALSE))
+          {
+            stop("defaultValue must be a proper boolean value")
+          }
 	}
+
 	if(!is.na(mapMissingTo))
 	{
 	  missingValue <- as.character(mapMissingTo)
+          if(!((missingValue==1) || (missingValue==0) || toupper(missingValue)==TRUE || toupper(missingValue)==FALSE))
+          {
+            stop("missingValue must be a proper boolean value")
+          }
 	}
 
-	if(!((defaultValue==1) || (defaultValue==0) || toupper(defaultValue)==TRUE || toupper(defaultValue)==FALSE))
-	{
-	  stop("defaultValue must be a proper boolean value") 
-	} 
-
-        if(!((missingValue==1) || (missingValue==0) || toupper(missingValue)==TRUE || toupper(missingValue)==FALSE))
-        {
-          stop("missingValue must be a proper boolean value")
-        } 
 
 # add variable info to the data matrix
 	top <- rbind(vname,vdtype)
@@ -402,6 +402,8 @@ vname <- NULL
       rownames(newcol) <- NULL
 
      newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+#new
+     newBoxData$matrixData <- cbind(newBoxData$matrixData,newcol)
 
      return(newBoxData)
 }

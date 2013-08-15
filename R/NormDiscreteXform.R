@@ -21,7 +21,7 @@
 ############################################################################
 
 NormDiscreteXform <-
-function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
+function(boxdata,xformInfo=NA,inputVar=NA,defaultValue=NA,mapMissingTo=NA,...)
 {
 	map <- NULL
 	colmn <- NULL
@@ -36,6 +36,13 @@ function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
         scales <- NA
 	default <- NA
 	missingValue <- NA
+
+	if(is.na(xformInfo) && is.na(inputVar))
+	  stop("xformInfo/inputVar parameter required.")
+
+	if(is.na(inputVar))
+	  inputVar <- xformInfo
+
 	newBoxData <- Initialize(boxdata)
 
 	dots <- list(...)
@@ -168,7 +175,7 @@ function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
 	 name <- gsub("'","_",name)
          toNames <- c(toNames,name)
         }
-	
+
 	for(i in 1:length(catNames))
 	{
 	 type <- "derived"
@@ -176,7 +183,7 @@ function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
 	 origFieldName <- fromName
 	 derivedFieldName <- toNames[i] 
 	 fieldsMap <- list(as.character(catNames[i]))
- 
+
 	 transform <- "NormDiscrete"
 	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE)
 	 suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
@@ -202,6 +209,8 @@ function(boxdata,inputVar,defaultValue=NA,mapMissingTo=NA,...)
 	 rownames(newcol) <- NULL
 
      	 newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+#new
+	 newBoxData$matrixData <- cbind(newBoxData$matrixData,newcol)
 	}
         newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default

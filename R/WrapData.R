@@ -31,20 +31,38 @@ function(indata)
 	dataType <- NULL
 	origFieldName <- NULL
 
-	dataBox$data <- indata
-	dataBox$nrows <- nrow(indata)
-	dataBox$ncols <- ncol(indata)
-     
-        fieldNames <- names(indata)
+	dataBox$matrixData <- as.matrix(indata)
+        indatafrm <- data.frame(indata)
+	dataBox$data <- indatafrm
+	dataBox$nrows <- nrow(indatafrm)
+	dataBox$ncols <- ncol(indatafrm)
+
+#new
+        if(is.matrix(indatafrm))
+        {
+          if(!is.numeric(indatafrm))
+          {
+            stop("Non-numeric matrices not yet supported for transformations")
+          }
+        }
+
+
+#new 
+        fieldNames <- names(indatafrm)
+
 	for(i in 1:dataBox$ncols)
 	{
 		origFieldName <- NA
 		type[i] <- "original"
-		dataType[i] <- class(indata[,i])
-		if(dataType[i] == "integer")
+
+		if(is.numeric(indata[,i]))
 		{
-		 dataType[i] <- "numeric"
+		  dataType[i] <- "numeric"
+		} else
+		{
+		  dataType[i] <- "factor"
 		}
+
 	}
 
         # mark all original field names by type=original and origFieldName=NA 

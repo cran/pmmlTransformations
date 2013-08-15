@@ -159,6 +159,7 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 		colLength <- length(names(newBoxData$data))
 		names(newBoxData$data)[i] <- name
 
+		newBoxData$matrixData <- cbind(newBoxData$matrixData,newBoxData$data[,j])
 		newBoxData$fieldData[i,"centers"] <- attributes(xformed)$"scaled:center"[j]
                 newBoxData$fieldData[i,"scales"] <- attributes(xformed)$"scaled:scale"[j]
 	}

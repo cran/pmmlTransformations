@@ -8,49 +8,72 @@ Data Transformations for PMML output
 \description{
 This package reads in raw data and allows the user to perform various transformations 
 on the input data. The user can then use the derived data to construct models 
-and output the model together with data transformations in PMML format through the use 
-of the 'pmml' package. 
+and output the model together with data transformations in the Predictive Model Markup
+Language (PMML) format through the use of the \bold{pmml} package. 
+
+  PMML is an XML based language which
+  provides a way for applications to define statistical and data mining
+  models and to share models between PMML compliant applications. More
+  information about PMML and the Data Mining Group can be found at
+  http://www.dmg.org.  
+  
+  The generated PMML can be imported into any PMML consuming
+  application, such as the Zementis ADAPA and UPPI scoring engines which allow for
+  predictive models built in R to be deployed and executed on site, in the cloud 
+  (Amazon, IBM, and FICO), in-database (IBM Netezza, Pivotal, Sybase IQ, Teradata and 
+  Teradata Aster) or Hadoop (Datameer and Hive). 
 }
 \details{
 \tabular{ll}{
 Package: \tab pmmlTransformations\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2012-11-20\cr
+Version: \tab 1.2\cr
+Date: \tab 2013-08-20\cr
 License: \tab LGPL (>=2.1)\cr
 }
-The general methodology to use this package is to first wrap the data with the 'WrapData' function 
+The general methodology to use this package is to first wrap the data with the \bold{WrapData} function 
 and then perform all desired transformations. The model, in PMML format, including the information 
-on the transformations executed, can then be output by calling the 'pmml' function of the pmml package. 
-The 'pmml' function in this case has to be given an additional parameter, 'transform', as shown in the 
+on the transformations executed, can then be output by calling the \bold{pmml} function of the pmml package. 
+The \bold{pmml} function in this case has to be given an additional parameter, \bold{transform}, as shown in the 
 example below.
+
+This package can also be used as a transformation generator; output just the transformations information
+instead of the whole pmml model. To do so, one has to call the pmml function with the WrapData output but
+pass in a null value as the model name. An example can be seen in the documentation for the \bold{WrapData} function.
 
 This package does not support boolean dataTypes yet; only numeric and string data are supported.  
 }
 \author{
-Zementis, Inc.
+Tridivesh Jena, Zementis, Inc.
 }
 \references{
-  Alex Guazzelli, Wen-Ching Lin & Tridivesh Jena (2012),\emph{ PMML in Action: Unleashing the Power of 
-Open Standards for Data Mining and Predictive Analytics} (Second Edition - Available on Amazon.com - 
-\url{http://www.amazon.com/dp/1470003244}
 
-  Data Mining Group home page: \url{http://www.dmg.org}
+  PMML home page: \url{http://www.dmg.org}
+  
+  PMML page describing various possible data transformations:\cr
+   \url{http://www.dmg.org/v4-1/Transformations.html} 
+  
+  PMML Transformations Generator:\cr
+   \url{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}
+  
+  A. Guazzelli, W. Lin, T. Jena (2012), \emph{PMML in Action: Unleashing the Power  
+     of Open Standards for Data Mining and Predictive Analytics}. CreativeSpace 
+     (Second Edition) - Available on Amazon.com - \url{http://www.amazon.com/dp/1470003244}.
 
-  Zementis PMML Resources page: \url{http://www.zementis.com/pmml.htm}
-
-  PMML Transformations Generator: \url{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}
+  T. Jena, A. Guazzelli, W. Lin, M. Zeller (2013). The R pmmlTransformations Package. 
+     In \emph{Proceedings of the 19th ACM SIGKDD Conference on Knowledge Discovery 
+     and Data Mining}.
 }
 \keyword{ pmml }
 \examples{
-# load the standard iris dataset, already available in the base R package
+# Load the standard iris dataset, already available in the base R package
    data(iris)
 
 # First create the wrapper object
    irisBox <- WrapData(iris)
 
-# perform a simple z-transformation on the first variable of the dataset, 'Sepal.Length'
-# By default, the name of the transformed variable is 'derived_Sepal.Length'
+# Perform a simple z-transformation on the first variable of the dataset: Sepal.Length
+# By default, the name of the transformed variable is "derived_Sepal.Length"
 # The information of the transformation is added back to the wrapped data object.
    irisBox <- ZScoreXform(irisBox,"1")
 

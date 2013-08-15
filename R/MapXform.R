@@ -172,7 +172,6 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
         dataMatrix <- matrix(file,nrow=nrows,byrow=TRUE)
 
 
-
 #defaultValue=f,mapMissingTo=g
 	if(!is.na(defaultValue))
 	{
@@ -211,11 +210,12 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 
 	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
-
         end <- nrow(newBoxData$fieldData)
 	info <- newBoxData$fieldData[end,"fieldsMap"][[1]]
 
 	newcol <- NULL
+#new
+	newmatrixcol <- NULL
 	#for each row; ie piece of input data
 	for(d in 1:nrow(newBoxData$data))
 	{
@@ -227,9 +227,12 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
           if(outDat == "numeric")
           {
            newcol <- rbind(newcol,as.numeric(missingValue))
+	   newmatrixcol <- rbind(newmatrixcol,as.numeric(missingValue))
           } else
           {
            newcol <- rbind(newcol,missingValue)
+#new
+	   newmatrixcol <- rbind(newmatrixcol,missingValue)
           }
 	  break 
     	 }
@@ -238,6 +241,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
          for( j in 3:nrow(dataMatrix))
          {
 	  match <- FALSE
+
 	  # for each input variable column except the last output variable
           for(k in 1:(ncol(dataMatrix)-1))
           {
@@ -256,9 +260,13 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	   if(outDat == "numeric")
 	   {
 	    newcol <- rbind(newcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
+#new
+	    newmatrixcol <- rbind(newmatrixcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
 	   } else
 	   {
 	    newcol <- rbind(newcol,dataMatrix[j,ncol(dataMatrix)])
+#new
+	    newmatrixcol <- rbind(newmatrixcol,dataMatrix[j,ncol(dataMatrix)])
 	   }
 	   break
 	  }
@@ -270,9 +278,13 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	  if(outDat == "numeric")
 	  {
 	   newcol <- rbind(newcol,as.numeric(default))
+#new
+	   newmatrixcol <- rbind(newmatrixcol,as.numeric(default))
 	  } else
 	  {
 	   newcol <- rbind(newcol,default)
+#new
+	   newmatrixcol <- rbind(newmatrixcol,default)
 	  }
 	 }
         }
@@ -280,7 +292,11 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
       colnames(newcol) <- dataMatrix[1,ncol(dataMatrix)]
       rownames(newcol) <- NULL
 
+     colnames(newmatrixcol) <- colnames(newcol)
+
      newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+#new
+     newBoxData$matrixData <- cbind(newBoxData$matrixData,newmatrixcol)
 
      return(newBoxData)
 }

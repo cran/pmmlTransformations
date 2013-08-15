@@ -17,39 +17,38 @@ RenameVar(boxdata, xformInfo=NA, ...)
   }
 }
 \details{
- Once input data is wrapped by the 'WrapData' function, it is somewhat involved to rename a variable
+ Once input data is wrapped by the \bold{WrapData} function, it is somewhat involved to rename a variable
 inside. This function makes it easier to do so.
- Given an variable named 'InputVar' and the name one wishes to rename it to, 'OutputVar', the 
+ Given an variable named \bold{InputVar} and the name one wishes to rename it to, \bold{OutputVar}, the 
 rename command options are:
 	
 	xformInfo="InputVar -> OutputVar"
 
- There are two methods in which the variables can be referred to. The first method is to use its 
-column number; given the 'data' attribute of the 'boxdata' object, this would be the order at 
+There are two methods in which the variables can be referred to. The first method is to use its 
+column number; given the \bold{data} attribute of the \bold{boxData} object, this would be the order at 
 which the variable appears. This can be indicated in the format "column#". The second method is to 
 refer to the variable by its name. This method will work even if the renamed value already exists; in 
-which case there will be two variables with the same name. \cr 
- If no input variable name is provided, the original object is returned with no renamings performed.
+which case there will be two variables with the same name.
+
+If no input variable name is provided, the original object is returned with no renamings performed.
 
 }
 \value{
 R object containing the raw data, the transformed data and data statistics.
 }
-\references{
- Details on commonly used datasets, including the Iris data set: \url{http://www.dmg.org/pmml_examples}
-}
+
 \author{
-Zementis, Inc.
+Tridivesh Jena, Zementis, Inc.
 }
 
 \seealso{
 \code{\link{WrapData}}.
 }
 \examples{
-# load the standard iris dataset, already built into R
+# Load the standard iris dataset, already built into R
    data(iris)
 
-# first wrap the data
+# First wrap the data
    irisBox <- WrapData(iris)
 
 # We wish to refer to the variables "Sepal.Length" and "Sepal.Width" as "SL" and "SW"

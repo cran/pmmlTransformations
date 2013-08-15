@@ -117,8 +117,9 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 		if(suppressWarnings(!is.na(as.numeric(colnm))))
 		{
 			coln2 <- as.numeric(colnm)
-		#column number is numeric but data type of categorical below gives null
+			#column number is numeric but data type of categorical below gives null
 			dataType <- newBoxData$fieldData[names(newBoxData$data)[coln2],"dataType"]
+
 			if(dataType == "numeric")
 			{
 				colmn <- cbind(colmn,newBoxData$data[,coln2])
@@ -142,12 +143,14 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 				dataType <- "numeric"
 				origFieldName <- row.names(newBoxData$fieldData)[coln2] 
        		                derivedFieldName <- finalName
+
 				xformedMin <- MIN
                                	xformedMax <- MAX
                                	sampleMin <- minimum
                                	sampleMax <- maximum
 				transform <- "minmax"
                                	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+
 
                                	newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			}
@@ -193,21 +196,25 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 
 	xformed <- scale(colmn,center,scale)
 
-
 	begin <- initLength+1
 	end <- nrow(newBoxData$fieldData)
+
 	for(i in begin:end)
 	{
 		j <- j+1
+
 		name <- row.names(newBoxData$fieldData)[i]
 		newMatrix <- cbind(newBoxData$data,xformed[,j])
 		newBoxData$data <- newMatrix
 		colLength <- length(names(newBoxData$data))
+
+       		newBoxData$matrixData <- cbind(newBoxData$matrixData,newBoxData$data[,j])
 		names(newBoxData$data)[i] <- name
 
 		newBoxData$fieldData[i,"centers"] <- attributes(xformed)$"scaled:center"[j]
 		newBoxData$fieldData[i,"scales"] <- attributes(xformed)$"scaled:scale"[j]
 	} 
+
 
 	return(newBoxData)
 }
