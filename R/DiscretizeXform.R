@@ -1,10 +1,8 @@
-# This file is part of the pmmlTransformations package 
-#
-# This part of the PMML Transformation package handles discretization 
-#
-# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+# PMML (Predictive Model Markup Language) Transformations 
 #
 # Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -13,11 +11,13 @@
 #
 # The pmmlTransformations package is distributed in the hope that it will 
 # be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
 ############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
 
 DiscretizeXform <-
 function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
@@ -40,7 +40,9 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
         sep <- ":"
 
 	newBoxData <- Initialize(boxdata)
-
+#	if(!is.numeric(newBoxData$data))
+#	  stop("Non-numeric matrices not yet supported for transformations")
+ 
 # EXTRACT DATA FROM xformInfo 
 #[a->c][d->s]
         minf <- as.character(xformInfo)
@@ -261,149 +263,166 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
            dataMatrix[j,6] <- rightValue
           }
 
+#	  colnames(dataMatrix) <- dataMatrix[1,]
+
 	fieldsMap <- list(dataMatrix)
 	suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
 
+
 	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
-	newcol <- NULL
-	#for each row; ie piece of input data
-	for(d in 1:nrow(newBoxData$data))
+	colnames(dataMatrix) <- dataMatrix[1,]
+        type <- NULL
+        for(j in 3:nrow(dataMatrix))
 	{
-	 data <- newBoxData$data[d,]
-	 origName <- dataMatrix[1,1]
-	 derivedName <- dataMatrix[1,2]
+	  if(is.na(dataMatrix[j,"leftValue"]) && (dataMatrix[j,"rightInterval"] == "Closed"))
+	  {
+	    type[j] <- 1
+	    next
+	  }
+          if(is.na(dataMatrix[j,"leftValue"]) && (dataMatrix[j,"rightInterval"] == "Open"))
+          {
+            type[j] <- 2
+	    next
+          }
+          if((dataMatrix[j,"leftInterval"] == "closed") && is.na(dataMatrix[j,"rightValue"]))
+          {
+            type[j] <- 7
+	    next
+          }
+          if((dataMatrix[j,"leftInterval"] == "open") && is.na(dataMatrix[j,"rightValue"]))
+          {
+            type[j] <- 8
+	    next
+          }
+	  if((dataMatrix[j,"leftInterval"] == "closed") && (dataMatrix[j,"rightInterval"] == "Closed"))
+          {
+            type[j] <- 3
+	    next
+          }
+          if((dataMatrix[j,"leftInterval"] == "closed") && (dataMatrix[j,"rightInterval"] == "Open"))
+          {
+            type[j] <- 4
+	    next
+          }
+          if((dataMatrix[j,"leftInterval"] == "open") && (dataMatrix[j,"rightInterval"] == "Closed"))
+          {
+            type[j] <- 5
+	    next
+          }
+          if((dataMatrix[j,"leftInterval"] == "open") && (dataMatrix[j,"rightInterval"] == "Open"))
+          {
+            type[j] <- 6
+	    next
+          }
+	}
+
+	newcol <- NULL
+	origName <- dataMatrix[1,1]
+	derivedName <- dataMatrix[1,2]
+
+         if(!is.numeric(newBoxData$data[1,1]))
+           stop("Non-numeric matrices not yet supported for transformations")
 
 	# if data is missing, put in missing value replacement and go to next data row
-	 if(is.na(data[origName]) || data[origName] == "")
-	 {
-          if(outDat == "numeric")
-          {
-           newcol <- rbind(newcol,as.numeric(missingValue))
-          } else
-          {
-           newcol <- rbind(newcol,missingValue)
-          }
-	  next 
-    	 }
+	# if(is.na(data[origName]) || data[origName] == "")
+	# {
+        #  if(outDat == "numeric")
+        #  {
+        #   newcol <- rbind(newcol,as.numeric(missingValue))
+        #  } else
+        #  {
+        #   newcol <- rbind(newcol,missingValue)
+        #  }
+	#  next 
+    	# }
 
-	 match <- FALSE
-	 partialmatch <- FALSE 
-	 found <- FALSE
+#	 if(!is.na(missingValue))
+#	 {
+#           if(outDat == "numeric")
+#           {
+#            newcol <- rep(as.numeric(missingValue),nrow(newBoxData$data))
+#           } else
+#           {
+#            newcol <- rep(missingValue,nrow(newBoxData$data))
+#           }
+#	 } else
+#	 {
+#	  newcol <- rep(NA,nrow(newBoxData$data))
+#	 }
+
+# Tridi: 9/20/13: Decided that values should be initialized to default rather than missing
+         if(!is.na(default))
+         {
+           if(outDat == "numeric")
+           {
+            newcol <- rep(as.numeric(default),nrow(newBoxData$data))
+           } else
+           {
+            newcol <- rep(default,nrow(newBoxData$data))
+           }
+         } else
+         {
+          newcol <- rep(NA,nrow(newBoxData$data))
+         }
+
+
 	 # for each field map row given except the top 2 (name and type)
          for( j in 3:nrow(dataMatrix))
          {
-	   leftValue <- NULL
-	   rightValue <- NULL
-	   if(grepl(sep,dataMatrix[j,1]))
-	   {
-	    range <- strsplit(dataMatrix[j,1],sep)[[1]]
-
-	    if(!(grepl("^\\[",range[1]) | grepl("^\\(",range[1])))
-             stop("Left interval not given in proper format.")
-	    if(!(grepl("\\]$",range[2]) | grepl("\\)$",range[2])))
-             stop("Right interval not given in proper format.")
-	    if(grepl("^\\[",range[1]))
-	    {
-	     leftValue <- gsub("\\[","",range[1])
-	     if(data[origName] >= leftValue)
-	     {
-	      partialmatch <- TRUE
-	     }
-	    } else if(grepl("^\\(",range[1]))
-	    {
-	     leftValue <- gsub("\\(","",range[1])
-             if(data[origName] > leftValue)
-             {
-              partialmatch <- TRUE
-             }
-	    } 
-
-            if(partialmatch && grepl("\\]$",range[2]))
-            {
-	     rightValue <- gsub("\\]","",range[2])
-             if(data[origName] <= rightValue)
-             {
-              match <- TRUE
-             } 
-            } else if(partialmatch && grepl("\\)$",range[2]))
-            {
-	     rightValue <- gsub("\\)","",range[2])
-             if(data[origName] < rightValue)
-             {
-              match <- TRUE
-             }
-            }
-# end if both left and right limits given
-	   } else
-	   {
-	    range <- dataMatrix[j,1]
-            if(grepl("^\\[",range[1]))
-            {
-	     leftValue <- gsub("\\[","",range[1])
-             if(data[origName] >= leftValue)
-             {
-              match <- TRUE
-             }
-            } else if(grepl("^\\(",range[1]))
-            {
-	     leftValue <- gsub("\\(","",range[1])
-             if(data[origName] > leftValue)
-             {
-              match <- TRUE
-             }
-            } else if(grepl("\\]$",range[1]))
-            {
-	     rightValue <- gsub("\\]","",range[1])
-             if(data[origName] <= rightValue)
-             {
-              match <- TRUE
-             }
-            } else if(grepl("\\)$",range[1]))
-            {
-	     rightValue <- gsub("\\)","",range[1])
-             if(data[origName] < rightValue)
-             {
-              match <- TRUE
-             }
-            } 
-	   }
-#end if only 1 limit given
-	   if(match)
-	   {
-	    match <- FALSE
-	    partialmatch <- FALSE
-	    found <- TRUE
-	    if(outDat == "numeric")
-	    {
-	     newcol <- rbind(newcol,as.numeric(dataMatrix[j,2]))
-	    } else
-	    {
-	     newcol <- rbind(newcol,dataMatrix[j,2])
-	    }
-	   }
-	  }
-# end looping over all given limits
-          # no match found
-          if(!found && !is.na(default))
+#print("ROW BEGIN")
+#print(proc.time())
+          if(type[j] == 1)
           {
-           if(outDat == "numeric")
-           {
-            newcol <- rbind(newcol,as.numeric(default))
-           } else
-           {
-            newcol <- rbind(newcol,default)
-           }
+           newcol[newBoxData$data[,origName]<=dataMatrix[j,"rightValue"]] <- dataMatrix[j,derivedName] 
           }
-# end looping over all given data rows
-         }
+          if(type[j] == 2)
+          {
+           newcol[newBoxData$data[,origName]<dataMatrix[j,"rightValue"]] <- dataMatrix[j,derivedName]                                                                 
+          }
+	  if(type[j] == 3)
+	  {
+	   newcol[(dataMatrix[j,"leftValue"]<=newBoxData$data[,origName]) & (newBoxData$data[,origFieldName]<=dataMatrix[j,"rightValue"])] <- dataMatrix[j,derivedName]
+	  }
+          if(type[j] == 4)
+          {
+           newcol[(dataMatrix[j,"leftValue"]<=newBoxData$data[,origName]) & (newBoxData$data[,origFieldName]<dataMatrix[j,"rightValue"])] <- dataMatrix[j,derivedName]
+          }
+          if(type[j] == 5)
+          {
+           newcol[(dataMatrix[j,"leftValue"]<newBoxData$data[,origName]) & (newBoxData$data[,origFieldName]<=dataMatrix[j,"rightValue"])] <- dataMatrix[j,derivedName]
+          }
+          if(type[j] == 6)
+          {
+           newcol[(dataMatrix[j,"leftValue"]<newBoxData$data[,origName]) & (newBoxData$data[,origFieldName]<dataMatrix[j,"rightValue"])] <- dataMatrix[j,derivedName]
+          }
+          if(type[j] == 7)
+          {
+           newcol[dataMatrix[j,"leftValue"]<=newBoxData$data[,origName]] <- dataMatrix[j,derivedName]
+          }
+          if(type[j] == 8)
+          {
+           newcol[dataMatrix[j,"leftValue"]<newBoxData$data[,origName]] <- dataMatrix[j,derivedName]
+          }
+#print("ROW END")
+#print(proc.time())
+	}
 
-      colnames(newcol) <- dataMatrix[1,2]
-      rownames(newcol) <- NULL
+      col <- as.matrix(newcol)
+      colnames(col) <- dataMatrix[1,2]
+      rownames(col) <- NULL
 
-     newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+     newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
+
 #new
-     newBoxData$matrixData <- cbind(newBoxData$matrixData,newcol)
+     if(outDat == "numeric")
+     {
+      newBoxData$matrixData <- cbind(newBoxData$matrixData,as.numeric(col))
+      colnames(newBoxData$matrixData) <- colnames(newBoxData$data)
+     } else
+     {
+      newBoxData$matrixData <- cbind(newBoxData$matrixData,col)
+     }
 
      return(newBoxData)
 }

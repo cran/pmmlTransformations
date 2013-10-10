@@ -1,5 +1,25 @@
-RenameVar <-
-function(boxdata,xformInfo=NA,...)
+# PMML (Predictive Model Markup Language) Transformations 
+#
+# Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
+#
+# The pmmlTransformations package is free: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# The pmmlTransformations package is distributed in the hope that it will 
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
+############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
+
+RenameVar <- function(boxdata,xformInfo=NA,...)
 {
 
 	i <- NULL

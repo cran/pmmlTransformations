@@ -1,10 +1,8 @@
-# This file is part of the pmmlTransformations package 
-#
-# This part of the PMML Transformation package handles Mapping
-#
-# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+# PMML (Predictive Model Markup Language) Transformations 
 #
 # Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -13,14 +11,15 @@
 #
 # The pmmlTransformations package is distributed in the hope that it will 
 # be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
 ############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
 
-MapXform <-
-function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
+MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 {
 	newrow <- NULL
 	colnamesGiven <- FALSE
@@ -216,87 +215,128 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	newcol <- NULL
 #new
 	newmatrixcol <- NULL
-	#for each row; ie piece of input data
-	for(d in 1:nrow(newBoxData$data))
-	{
-	 data <- newBoxData$data[d,]
-
+#	for(d in 1:nrow(newBoxData$data))
+#	{
+#	 data <- newBoxData$data[d,]
 	# if data is missing, put in missing value replacement and go to next data row
-	 if(is.na(data) || data == "")
-	 {
-          if(outDat == "numeric")
-          {
-           newcol <- rbind(newcol,as.numeric(missingValue))
-	   newmatrixcol <- rbind(newmatrixcol,as.numeric(missingValue))
-          } else
-          {
-           newcol <- rbind(newcol,missingValue)
+#	 if(is.na(data) || data == "")
+#	 {
+#          if(outDat == "numeric")
+#          {
+#           newcol <- rbind(newcol,as.numeric(missingValue))
+#	   newmatrixcol <- rbind(newmatrixcol,as.numeric(missingValue))
+#          } else
+#          {
+#           newcol <- rbind(newcol,missingValue)
 #new
-	   newmatrixcol <- rbind(newmatrixcol,missingValue)
-          }
-	  break 
-    	 }
+#	   newmatrixcol <- rbind(newmatrixcol,missingValue)
+#          }
+#	  break 
+#    	 }
+
+         if(!is.na(default))
+         {
+           if(outDat == "numeric")
+           {
+            newcol <- rep(as.numeric(default),nrow(newBoxData$data))
+	    newmatrixcol <- rep(as.numeric(default),nrow(newBoxData$data))
+           } else
+           {
+            newcol <- rep(default,nrow(newBoxData$data))
+	    newmatrixcol <- rep(default,nrow(newBoxData$data))
+           }
+         } else
+         {
+          newcol <- rep(NA,nrow(newBoxData$data))
+	  newmatrixcol <- rep(NA,nrow(newBoxData$data))
+         }
+
 
 	 # for each mapvalue row given except the top 2 (var name and dataType)
          for( j in 3:nrow(dataMatrix))
          {
-	  match <- FALSE
-
-	  # for each input variable column except the last output variable
-          for(k in 1:(ncol(dataMatrix)-1))
-          {
-	   if(data[dataMatrix[1,k]] == dataMatrix[j,k])
-	   {
-	    match <- TRUE
-	   } else
-	   {
-	    match <- FALSE
-	    break
-	   }
-          }
-	# all input column values that in data
-	  if(match)
+#print("ROW BEGIN")
+#print(proc.time())
+	  if(outDat == "numeric")
 	  {
-	   if(outDat == "numeric")
-	   {
-	    newcol <- rbind(newcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
-#new
-	    newmatrixcol <- rbind(newmatrixcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
-	   } else
-	   {
-	    newcol <- rbind(newcol,dataMatrix[j,ncol(dataMatrix)])
-#new
-	    newmatrixcol <- rbind(newmatrixcol,dataMatrix[j,ncol(dataMatrix)])
-	   }
-	   break
+# for each column of dataMatrix (ie, each input map value): find if input data has that value,
+# (do this by creating a matrix with the input values from dataMatrix repeated as many times as the number of 
+# data input variables; so each input value has the same matrix row to compare with)
+# result is a set of True and False. Apply function 'all' by row to see if all values in a row are true
+# resulting rows are the rows which match all the input map values  
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
+	  } else
+	  {
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
 	  }
+
+#	  match <- FALSE
+#
+#	  # for each input variable column except the last output variable
+#          for(k in 1:(ncol(dataMatrix)-1))
+#          {
+#	   if(data[dataMatrix[1,k]] == dataMatrix[j,k])
+#	   {
+#	    match <- TRUE
+#	   } else
+#	   {
+#	    match <- FALSE
+#	    break
+#	   }
+#          }
+#	# all input column values that in data
+#	  if(match)
+#	  {
+#	   if(outDat == "numeric")
+#	   {
+#	    newcol <- rbind(newcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
+##new
+#	    newmatrixcol <- rbind(newmatrixcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
+#	   } else
+#	   {
+#	    newcol <- rbind(newcol,dataMatrix[j,ncol(dataMatrix)])
+##new
+#	    newmatrixcol <- rbind(newmatrixcol,dataMatrix[j,ncol(dataMatrix)])
+#	   }
+#	   break
+#	  }
+
+#print("ROW END")
+#print(proc.time())
          }
 
 	# no match found
-	 if(!match && !is.na(default))
-	 {
-	  if(outDat == "numeric")
-	  {
-	   newcol <- rbind(newcol,as.numeric(default))
-#new
-	   newmatrixcol <- rbind(newmatrixcol,as.numeric(default))
-	  } else
-	  {
-	   newcol <- rbind(newcol,default)
-#new
-	   newmatrixcol <- rbind(newmatrixcol,default)
-	  }
-	 }
-        }
+#	 if(!match && !is.na(default))
+#	 {
+#	  if(outDat == "numeric")
+#	  {
+#	   newcol <- rbind(newcol,as.numeric(default))
+##new
+#	   newmatrixcol <- rbind(newmatrixcol,as.numeric(default))
+#	  } else
+#	  {
+#	   newcol <- rbind(newcol,default)
+##new
+#	   newmatrixcol <- rbind(newmatrixcol,default)
+#	  }
+#	 }
+#        }
 
-      colnames(newcol) <- dataMatrix[1,ncol(dataMatrix)]
-      rownames(newcol) <- NULL
+      col <- as.matrix(newcol)
+      matrixcol <- as.matrix(newmatrixcol)
 
-     colnames(newmatrixcol) <- colnames(newcol)
+     newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
+     newBoxData$matrixData <- cbind(newBoxData$matrixData,matrixcol)
 
-     newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+     colnames(newBoxData$data)[ncol(newBoxData$data)] <- dataMatrix[1,ncol(dataMatrix)]
+     rownames(newBoxData$data) <- NULL
+     colnames(newBoxData$matrixData) <- colnames(newBoxData$data)
+     rownames(newBoxData$matrixData) <- NULL
+
 #new
-     newBoxData$matrixData <- cbind(newBoxData$matrixData,newmatrixcol)
+##     newBoxData$matrixData <- cbind(newBoxData$matrixData,newmatrixcol)
 
      return(newBoxData)
 }

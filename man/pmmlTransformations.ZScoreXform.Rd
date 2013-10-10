@@ -7,14 +7,11 @@ Performs a z-score normalization on continuous values in accordance to the PMML 
 Performs a z-score normalization on data given in WrapData format
 }
 \usage{
-ZScoreXform(boxdata, xformInfo=NA, defaultValue=NA, mapMissingTo=NA, ...)
+ZScoreXform(boxdata, xformInfo=NA, mapMissingTo=NA, ...)
 }
 \arguments{
   \item{boxdata}{wrapper object obtained by using the WrapData function on the raw data.}
   \item{xformInfo}{specification of details of the transformation.}
-  \item{defaultValue}{
-   the default value of the transformed variable, to be indicated in the PMML file
-  }
   \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.} 
   \item{\dots}{
     further arguments passed to or from other methods. 
@@ -25,7 +22,7 @@ Given an input variable named \bold{InputVar}, the name of the transformed varia
 desired value of the transformed variable if the input variable value is missing \bold{missingVal},
 the ZScoreXform command including all the optional parameters is:
 
-	xformInfo="InputVar -> OutputVar", defaultValue="defVal", mapMissingTo="missingVal"
+	xformInfo="InputVar -> OutputVar", mapMissingTo="missingVal"
 
 There are two methods in which the variables can be referred to. The first method is to use its 
 column number; given the \bold{data} attribute of the \bold{boxData} object, this would be the order at 

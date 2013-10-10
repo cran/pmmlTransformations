@@ -1,11 +1,8 @@
-# This file is part of the pmmlTransformations package 
-#
-# This part of the PMML Transformation package 
-# creates the inintial objevt on which all subsequent operations are performed 
-#
-# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+# PMML (Predictive Model Markup Language) Transformations 
 #
 # Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -14,14 +11,15 @@
 #
 # The pmmlTransformations package is distributed in the hope that it will 
 # be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
 ############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
 
-WrapData <-
-function(indata)
+WrapData <-function(indata)
 {
 	dataBox <- NULL
 	fieldNames <- NULL

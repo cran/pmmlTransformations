@@ -1,5 +1,25 @@
-MinMaxXform <-
-function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
+# PMML (Predictive Model Markup Language) Transformations 
+#
+# Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
+#
+# The pmmlTransformations package is free: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License as published 
+# by the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# The pmmlTransformations package is distributed in the hope that it will 
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
+############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
+
+MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 {
 	colmn <- NULL
 	newrow <- NULL
@@ -21,10 +41,6 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
         {
            missingValue <- as.character(mapMissingTo)
         }
-        if(!is.na(defaultValue))
-        {
-          default <- as.character(defaultValue)
-        }
 
 	if(is.na(xformInfo))
 	{
@@ -37,9 +53,8 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 			dataType <- newBoxData$fieldData[name,"dataType"]
 			if(dataType == "numeric")
 			{
-				colmn <- cbind(colmn,newBoxData$data[,i])
-				minimum <- min(newBoxData$data[,i])
-				maximum <- max(newBoxData$data[,i])
+				minimum <- min(na.omit(newBoxData$data[,i]))
+				maximum <- max(na.omit(newBoxData$data[,i]))
 				factor <- (MAX - MIN)/(maximum - minimum)
 				st <- 1/factor
 				dif <- maximum - (MAX/factor)
@@ -59,6 +74,8 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
                                 newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			} 
 		}
+		d<-newBoxData$fieldData[names(newBoxData$data),"dataType"]
+                colmn <- newBoxData$data[,which(d=="numeric")] 
 	} else
 	{
 		# default limits 
@@ -67,6 +84,9 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 
 		coln <- as.character(xformInfo)
 		# expected format: initName -> finalName[MIN,MAX]
+	        if(grepl("\\]\\[",coln))
+		  stop("Only input and output variable names are allowed")
+
 		if(grepl("[^-]->",coln))
 		{
 			st <- strsplit(coln,"->")
@@ -101,6 +121,9 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 		{
 			MAX <- endVal
 		}
+		if(is.na(as.numeric(MIN)) || is.na(as.numeric(MAX)))
+		  stop("Invalid xformInfo. Please ensure the minimum or maximum value specified is numeric.")
+
 		MIN <- as.numeric(MIN)
 		MAX <- as.numeric(MAX)
 
@@ -130,8 +153,8 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
                                		finalName <- paste("derived_",row.names(newBoxData$fieldData)[coln2],sep="") 
                        		}
 
-				minimum <- min(newBoxData$data[,coln2])
-                               	maximum <- max(newBoxData$data[,coln2])
+				minimum <- min(na.omit(newBoxData$data[,coln2]))
+                               	maximum <- max(na.omit(newBoxData$data[,coln2]))
 
 				# derive numbers so as to use the 'scale' function to normalize 
                                	factor <- (MAX - MIN)/(maximum - minimum)
@@ -156,6 +179,10 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 			}
 		} else
 		{
+			if(!any(which(names(newBoxData$data) == colnm)))
+			{
+			  stop("Variable not found in input data set")
+			}
 			i <- which(names(newBoxData$data) == colnm)
 			dataType <- newBoxData$fieldData[names(newBoxData$data)[i],"dataType"]
 
@@ -167,8 +194,8 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
                                	{
                                         finalName <- paste("derived_",names(newBoxData$data)[i],sep="")
                                 }
-				minimum <- min(newBoxData$data[,i])
-     		                maximum <- max(newBoxData$data[,i])
+				minimum <- min(na.omit(newBoxData$data[,i]))
+     		                maximum <- max(na.omit(newBoxData$data[,i]))
                                	factor <- (MAX - MIN)/(maximum - minimum)
                                	st <- 1/factor
                                	dif <- maximum - (MAX/factor)
@@ -194,7 +221,11 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
 
+#print("SCALE BEGIN")
+#print(proc.time())
 	xformed <- scale(colmn,center,scale)
+#print("SCALE END")
+#print(proc.time())
 
 	begin <- initLength+1
 	end <- nrow(newBoxData$fieldData)

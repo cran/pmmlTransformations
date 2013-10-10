@@ -11,8 +11,7 @@ is \bold{A} then \bold{catVar_A} equals 1 and
 \bold{catVar_B} equals 0.  
 }
 \usage{
-NormDiscreteXform(boxdata, xformInfo=NA, inputVar=NA, defaultValue=NA, 
-mapMissingTo=NA, ...)
+NormDiscreteXform(boxdata, xformInfo=NA, inputVar=NA, mapMissingTo=NA, ...)
 }
 \arguments{
   \item{boxdata}{
@@ -24,9 +23,6 @@ mapMissingTo=NA, ...)
   \item{inputVar}{
    the input variable name in the data on which the transformation is to be applied 
   }
-  \item{defaultValue}{
-   the default value of the transformed variable, to be indicated in the PMML file
-  }
   \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.}
   \item{\dots}{
     further arguments passed to or from other methods.
@@ -37,7 +33,7 @@ Given an input variable, \bold{InputVar} and \bold{missingVal}, the desired valu
 if the input variable value is missing, the NormDiscreteXform command including all 
 optional parameters is in the format:
 
-   inputVar="input_variable", defaultValue="defVal", mapMissingTo="missingVal"
+	xformInfo="inputVar=input_variable, mapMissingTo=missingVal"
 
 There are two methods in which the input variable can be referred to. The first method is to use its
 column number; given the \bold{data} attribute of the \bold{boxData} object, this would be the order at

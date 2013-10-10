@@ -1,11 +1,8 @@
-# This file is part of the pmmlTransformations package 
-#
-# This part of the PMML Transformation package handles z-score transforms;
-# expressing numerical values in units of number of standard deviations from the mean
-#
-# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+# PMML (Predictive Model Markup Language) Transformations 
 #
 # Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -14,14 +11,16 @@
 #
 # The pmmlTransformations package is distributed in the hope that it will 
 # be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
 ############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
 
 ZScoreXform <-
-function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
+function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 {
 
 	colmn <- NULL
@@ -39,10 +38,6 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 	default <- NA
  	missingValue <- NA
 
-	if(!is.na(defaultValue))
-	{
-	  default <- defaultValue
-	}
         if(!is.na(mapMissingTo))
         {
           missingValue <- mapMissingTo
@@ -61,7 +56,6 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 			dataType <- newBoxData$fieldData[name,"dataType"]
 			if(dataType == "numeric")
 			{
-				colmn <- cbind(colmn,newBoxData$data[,i])
 				dataType <- "numeric"
 				type <- "derived"
 				transform <- "zxform"
@@ -72,10 +66,15 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 				newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			} 
 		}
+		d<-newBoxData$fieldData[names(newBoxData$data),"dataType"] 
+		colmn <- newBoxData$data[,which(d=="numeric")] 
 	} else
 	{
 		# for each argument given
 		coln <- as.character(xformInfo)
+		if(grepl("\\]",coln) || grepl("\\[",coln))
+                  stop("Only input and output variable names are allowed")
+
 		# split to find initial and final names 	
 		if(grepl("[^-]->",coln))
 		{
@@ -121,6 +120,10 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 			}
 		} else
 		{
+			if(!any(which(names(newBoxData$data) == colnm)))
+                        {
+                          stop("Variable not found in input data set")
+                        }
 			i <- which(names(newBoxData$data) == colnm)
 			dataType <- newBoxData$fieldData[names(newBoxData$data)[i],"dataType"]
 			if(dataType == "numeric")
@@ -144,8 +147,12 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
         newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
 
+#print("SCALE BEGIN")
+#print(proc.time())
 	# use scale function 
 	xformed <- scale(colmn,T,T)
+#print("SCALE END")
+#print(proc.time())
 
 	begin <- initLength+1
 	end <- nrow(newBoxData$fieldData)
@@ -163,6 +170,6 @@ function(boxdata,xformInfo=NA,defaultValue=NA,mapMissingTo=NA,...)
 		newBoxData$fieldData[i,"centers"] <- attributes(xformed)$"scaled:center"[j]
                 newBoxData$fieldData[i,"scales"] <- attributes(xformed)$"scaled:scale"[j]
 	}
-	
+
 	return(newBoxData)
 }

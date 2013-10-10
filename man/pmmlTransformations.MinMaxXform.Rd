@@ -7,7 +7,7 @@ Normalizes continuous values in accordance to the PMML element: \bold{NormContin
 Given input data in a WrapData format, normalize the given data values to lie between provided limits
 }
 \usage{
-MinMaxXform(boxdata, xformInfo=NA, defaultValue=NA, mapMissingTo=NA, ...)
+MinMaxXform(boxdata, xformInfo=NA, mapMissingTo=NA, ...)
 }
 \arguments{
   \item{boxdata}{
@@ -15,9 +15,6 @@ MinMaxXform(boxdata, xformInfo=NA, defaultValue=NA, mapMissingTo=NA, ...)
   }
   \item{xformInfo}{
    specification of details of the transformation. 
-  }
-  \item{defaultValue}{
-   the default value of the transformed variable, to be indicated in the PMML file
   }
   \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.}
   \item{\dots}{
@@ -32,8 +29,7 @@ the transformed variable may have \bold{high_limit}, and the desired value of th
 if the input variable value is missing \bold{missingVal}, the \bold{MinMaxXform} command including all the 
 optional parameters is in the format:
 
-xformInfo="InputVar -> OutputVar[low_limit,high_limit]", defaultValue="defVal", \cr
-mapMissingTo="missingVal"
+xformInfo="InputVar -> OutputVar[low_limit,high_limit], mapMissingTo="missingVal"
 
 There are two methods in which the variables can be referred to. The first method is to use its 
 column number; given the \bold{data} attribute of the \bold{boxData} object, this would be the order at 

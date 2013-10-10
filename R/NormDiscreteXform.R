@@ -1,11 +1,8 @@
-# This file is part of the pmmlTransformations package 
-#
-# This part of the PMML Transformation package assigns dummy variables 
-# to categorical values 
-#
-# Time-stamp: <2013-06-05 19:48:25 Tridivesh Jena>
+# PMML (Predictive Model Markup Language) Transformations 
 #
 # Copyright (c) 2013 Zementis, Inc.
+#
+# This file is part of the pmmlTransformations package 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -14,14 +11,16 @@
 #
 # The pmmlTransformations package is distributed in the hope that it will 
 # be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# To review the GNU General Public License see <http://www.gnu.org/licenses/>
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please see the
+# GNU General Public License for details (http://www.gnu.org/licenses/).
 ############################################################################
+#
+# Author: Tridivesh Jena
+#
+#---------------------------------------------------------------------------
 
 NormDiscreteXform <-
-function(boxdata,xformInfo=NA,inputVar=NA,defaultValue=NA,mapMissingTo=NA,...)
+function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
 {
 	map <- NULL
 	colmn <- NULL
@@ -132,10 +131,6 @@ function(boxdata,xformInfo=NA,inputVar=NA,defaultValue=NA,mapMissingTo=NA,...)
 	{
 	  missingValue <- as.character(mapMissingTo)
 	}
-	if(!is.na(defaultValue))
-	{
-	  default <- as.character(defaultValue)
-	}
 
 	# expected input format: initialName or [initialName]
 	input <- as.character(inputVar)
@@ -190,27 +185,21 @@ function(boxdata,xformInfo=NA,inputVar=NA,defaultValue=NA,mapMissingTo=NA,...)
 
 	 newcol <- NULL
 	 #for each row; ie piece of input data
-       	 for(d in 1:nrow(newBoxData$data))
-       	 {
-       	  col <- NULL
-       	  data <- newBoxData$data[d,]
-       	  if(data[fromName] == catNames[i])
-       	  {
-       	   col <- cbind(col,1)
-       	  } else
-       	  {
-       	   col <- cbind(col,0)
-       	  }
-       	  newcol <- rbind(newcol,col)
-       	 }
-
+#print("data BEGIN")
+#print(proc.time())
+	 newcol <- 1 * (newBoxData$data[,fromName] == catNames[i])
+         newcol[is.na(newcol)] <- missingValue 
+#print("data END..")
+#print(proc.time())
        	 names <- toNames[i]
-      	 colnames(newcol) <- names
-	 rownames(newcol) <- NULL
+	 newmat <- as.matrix(newcol)
+      	 colnames(newmat) <- names
+	 rownames(newmat) <- NULL
 
-     	 newBoxData$data <- data.frame(newBoxData$data,newcol,check.names=FALSE)
+     	 newBoxData$data <- data.frame(newBoxData$data,newmat,check.names=FALSE)
+
 #new
-	 newBoxData$matrixData <- cbind(newBoxData$matrixData,newcol)
+	 newBoxData$matrixData <- cbind(newBoxData$matrixData,newmat)
 	}
         newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
