@@ -19,7 +19,7 @@
 #
 #---------------------------------------------------------------------------
 
-MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
+MapXform <- function(boxdata,xformInfo,table=NA,defaultValue=NA,mapMissingTo=NA,...)
 {
 	newrow <- NULL
 	colnamesGiven <- FALSE
@@ -38,6 +38,8 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
 
 	newBoxData <- Initialize(boxdata)
 
+	if(!is.list(xformInfo))
+ 	{
 # EXTRACT DATA FROM xformInfo 
 #[a,b->c][d,d->s]
         minf <- as.character(xformInfo)
@@ -160,7 +162,6 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
           vdtype <- c(vdtype,outDat)
         }
 
-
 #EXTRACT DATA FROM table
 # read data from csv file
 	tabl <- as.character(table) 
@@ -169,7 +170,6 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
         nrows <- length(scan(tabl,what=character(0),sep="\n"))
         numcols <- ndat/nrows
         dataMatrix <- matrix(file,nrow=nrows,byrow=TRUE)
-
 
 #defaultValue=f,mapMissingTo=g
 	if(!is.na(defaultValue))
@@ -201,7 +201,7 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
 	{
 	 dataType <- outDat
 	}
-	fieldsMap <- list(dataMatrix) 
+	fieldsMap <- list(dataMatrix)
 	transform <- "MapValues"
 	derivedFieldName <- outVal
 
@@ -209,30 +209,8 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
 
 	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
-        end <- nrow(newBoxData$fieldData)
-	info <- newBoxData$fieldData[end,"fieldsMap"][[1]]
-
 	newcol <- NULL
-#new
 	newmatrixcol <- NULL
-#	for(d in 1:nrow(newBoxData$data))
-#	{
-#	 data <- newBoxData$data[d,]
-	# if data is missing, put in missing value replacement and go to next data row
-#	 if(is.na(data) || data == "")
-#	 {
-#          if(outDat == "numeric")
-#          {
-#           newcol <- rbind(newcol,as.numeric(missingValue))
-#	   newmatrixcol <- rbind(newmatrixcol,as.numeric(missingValue))
-#          } else
-#          {
-#           newcol <- rbind(newcol,missingValue)
-#new
-#	   newmatrixcol <- rbind(newmatrixcol,missingValue)
-#          }
-#	  break 
-#    	 }
 
          if(!is.na(default))
          {
@@ -240,7 +218,10 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
            {
             newcol <- rep(as.numeric(default),nrow(newBoxData$data))
 	    newmatrixcol <- rep(as.numeric(default),nrow(newBoxData$data))
-           } else
+           } else if(outDat == "boolean"){
+	    newcol <- rep(as.logical(default),nrow(newBoxData$data))
+	   } 
+           else
            {
             newcol <- rep(default,nrow(newBoxData$data))
 	    newmatrixcol <- rep(default,nrow(newBoxData$data))
@@ -251,12 +232,33 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
 	  newmatrixcol <- rep(NA,nrow(newBoxData$data))
          }
 
+        if(!is.na(missingValue))
+        {
+          for(i in 1:length(inVals))
+          {
+            na <- which(is.na(newBoxData$data[,inVals[i]])) 
+            for(j in na)
+            {
+              if(outDat == "numeric")
+              {
+                newcol[j] <- rep(as.numeric(missingValue),nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(as.numeric(missingValue),nrow(newBoxData$data))
+              } else if(outDat == "boolean")
+	      {
+                newcol[j] <- rep(as.logical(missingValue),nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(as.logical(missingValue),nrow(newBoxData$data))
+              } else
+              {
+                newcol[j] <- rep(missingValue,nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(missingValue,nrow(newBoxData$data))
+              }
+            }
+          }
+        }
 
 	 # for each mapvalue row given except the top 2 (var name and dataType)
          for( j in 3:nrow(dataMatrix))
          {
-#print("ROW BEGIN")
-#print(proc.time())
 	  if(outDat == "numeric")
 	  {
 # for each column of dataMatrix (ie, each input map value): find if input data has that value,
@@ -266,77 +268,160 @@ MapXform <- function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...
 # resulting rows are the rows which match all the input map values  
 newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
 newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
+	  } else if(outDat == "boolean"){
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.logical(dataMatrix[j,ncol(dataMatrix)])
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.logical(dataMatrix[j,ncol(dataMatrix)])
 	  } else
 	  {
 newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
 newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
 	  }
-
-#	  match <- FALSE
-#
-#	  # for each input variable column except the last output variable
-#          for(k in 1:(ncol(dataMatrix)-1))
-#          {
-#	   if(data[dataMatrix[1,k]] == dataMatrix[j,k])
-#	   {
-#	    match <- TRUE
-#	   } else
-#	   {
-#	    match <- FALSE
-#	    break
-#	   }
-#          }
-#	# all input column values that in data
-#	  if(match)
-#	  {
-#	   if(outDat == "numeric")
-#	   {
-#	    newcol <- rbind(newcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
-##new
-#	    newmatrixcol <- rbind(newmatrixcol,as.numeric(dataMatrix[j,ncol(dataMatrix)]))
-#	   } else
-#	   {
-#	    newcol <- rbind(newcol,dataMatrix[j,ncol(dataMatrix)])
-##new
-#	    newmatrixcol <- rbind(newmatrixcol,dataMatrix[j,ncol(dataMatrix)])
-#	   }
-#	   break
-#	  }
-
-#print("ROW END")
-#print(proc.time())
          }
 
-	# no match found
-#	 if(!match && !is.na(default))
-#	 {
-#	  if(outDat == "numeric")
-#	  {
-#	   newcol <- rbind(newcol,as.numeric(default))
-##new
-#	   newmatrixcol <- rbind(newmatrixcol,as.numeric(default))
-#	  } else
-#	  {
-#	   newcol <- rbind(newcol,default)
-##new
-#	   newmatrixcol <- rbind(newmatrixcol,default)
-#	  }
-#	 }
-#        }
-
-      col <- as.matrix(newcol)
-      matrixcol <- as.matrix(newmatrixcol)
-
+     col <- as.matrix(newcol)
      newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
-     newBoxData$matrixData <- cbind(newBoxData$matrixData,matrixcol)
-
      colnames(newBoxData$data)[ncol(newBoxData$data)] <- dataMatrix[1,ncol(dataMatrix)]
      rownames(newBoxData$data) <- NULL
-     colnames(newBoxData$matrixData) <- colnames(newBoxData$data)
-     rownames(newBoxData$matrixData) <- NULL
 
-#new
-##     newBoxData$matrixData <- cbind(newBoxData$matrixData,newmatrixcol)
+     if(!is.null(newBoxData$matrixData))
+     {
+      matrixcol <- as.matrix(newmatrixcol) 
+      newBoxData$matrixData <- cbind(newBoxData$matrixData,matrixcol)
+      colnames(newBoxData$matrixData) <- colnames(newBoxData$data)
+      rownames(newBoxData$matrixData) <- NULL
+     }
+     } else 
+     {
+      for(k in 1:length(xformInfo))
+      {
+	ifelse(is.list(xformInfo),xform<-xformInfo[[k]],xform<-table[[k]])
+	datatypes<-c("string","String","double","Double","boolean","Boolean","integer","Integer","float","Float")
+#	if(!(TRUE %in% (xform %in% datatypes)))
+#	if(!("mapMissingTo" %in% rownames(xform)))
+# check if data types given in 2nd row
+# Warning: if the map itself involves terms like "double"; have to make sure 2nd row is datatype; 
+# dont depend on default
+#        if(!((xform[2,1] %in% datatypes) && (xform[2,2] %in% datatypes)))
+        if(!(xform[2,ncol(xform)] %in% datatypes))
+	{
+	  datype<-rep("string",ncol(xform))
+          for(l in 1:ncol(xform)){xform[[l]]<-as.character(xform[[l]])}
+	  xform <- rbind(xform[1,],datype,xform[-1,])
+	}
+	orig <- as.matrix(xform[1,-ncol(xform)])
+	colnames(orig) <- NULL
+	rownames(orig) <- NULL
+	origFieldName <- list(orig) 
+	derivedFieldName <- as.character(xform[1,ncol(xform)])
+	default <- defaultValue[k]
+	missingValue <- mapMissingTo[k]
+        if((as.character(xform[2,ncol(xform)]) == "double") || (as.character(xform[2,ncol(xform)]) == "integer"))
+        {
+         outDat <- "numeric"
+        } else if(as.character(xform[2,ncol(xform)]) == "double")
+	{
+	  outDat <- "boolean"
+	} else
+	{
+	  outDat <- "string"
+	} 
+
+	if(derivedFieldName %in% rownames(newBoxData$fieldData)[newBoxData$fieldData[,"type"]=="derived"])
+	{
+	  newBoxData$fieldData <- newBoxData$fieldData[-which(rownames(newBoxData$fieldData)==derivedFieldName),]
+	}
+
+	suppressWarnings(newrow <- data.frame("derived",outDat,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(list(as.matrix(xform))),"MapValues",defaultValue[k],mapMissingTo[k],row.names=derivedFieldName,check.names=FALSE))
+ 	colnames(newrow)<-c("type","dataType","origFieldName","sampleMin","sampleMax","xformedMin","xformedMax","centers","scales","fieldsMap","transform","default","missingValue")
+        suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
+#?need to convert xform to a matrix? 
+#?need to remove rownames?
+	dataMatrix <- as.matrix(xform)
+
+        newcol <- NULL
+        newmatrixcol <- NULL
+        if(!is.na(default))
+        {
+          if(outDat == "numeric")
+          {
+           newcol <- rep(as.numeric(default),nrow(newBoxData$data))
+           newmatrixcol <- rep(as.numeric(default),nrow(newBoxData$data))
+          } else if(outDat == "boolean"){
+           newcol <- rep(as.logical(default),nrow(newBoxData$data))
+          }
+          else
+          {
+           newcol <- rep(default,nrow(newBoxData$data))
+           newmatrixcol <- rep(default,nrow(newBoxData$data))
+          }
+        } 
+
+        if(!is.na(missingValue))
+        {
+          for(i in 1:length(orig[1,]))
+          {
+            na <- which(is.na(newBoxData$data[,orig[1,i]])) 
+            for(j in na)
+            {
+              if(outDat == "numeric")
+              {
+                newcol[j] <- rep(as.numeric(missingValue),nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(as.numeric(missingValue),nrow(newBoxData$data))
+              } else if(outDat == "boolean"){
+                newcol[j] <- rep(as.logical(missingValue),nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(as.logical(missingValue),nrow(newBoxData$data))
+              } else
+              {
+                newcol[j] <- rep(missingValue,nrow(newBoxData$data))
+                newmatrixcol[j] <- rep(missingValue,nrow(newBoxData$data))
+              }
+            }
+          }
+        }
+
+         # for each mapvalue row given except the top 2 (var name and dataType)
+         for( j in 3:nrow(dataMatrix))
+         {
+          if(outDat == "numeric")
+          {
+# for each column of dataMatrix (ie, each input map value): find if input data has that value,
+# (do this by creating a matrix with the input values from dataMatrix repeated as many times as the number of
+# data input variables; so each input value has the same matrix row to compare with)
+# result is a set of True and False. Apply function 'all' by row to see if all values in a row are true
+# resulting rows are the rows which match all the input map values
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.numeric(dataMatrix[j,ncol(dataMatrix)])
+          } else if(outDat == "boolean"){
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.logical(dataMatrix[j,ncol(dataMatrix)])
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-as.logical(dataMatrix[j,ncol(dataMatrix)])
+          } else
+          {
+newcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
+newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1)]]==matrix(rep(dataMatrix[j,1:(ncol(dataMatrix)-1)],nrow(newBoxData$data)),nrow=nrow(newBoxData$data),byrow=T)),1,all)]<-dataMatrix[j,ncol(dataMatrix)]
+          }
+         }
+
+#         if(!is.na(missingValue))
+#         {
+#          mis <- which(is.na(newcol))
+#          newcol[mis] <- missingValue
+#         }
+
+      	col <- as.matrix(newcol)
+      	matrixcol <- as.matrix(newmatrixcol)
+
+     	newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
+        colnames(newBoxData$data)[ncol(newBoxData$data)] <- dataMatrix[1,ncol(dataMatrix)]
+        rownames(newBoxData$data) <- NULL
+
+	if(!is.null(newBoxData$matrixData))
+	{
+     	 newBoxData$matrixData <- cbind(newBoxData$matrixData,matrixcol)
+         colnames(newBoxData$matrixData) <- colnames(newBoxData$data)
+         rownames(newBoxData$matrixData) <- NULL
+        }
+     }
+    }
 
      return(newBoxData)
 }

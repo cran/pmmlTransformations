@@ -1,9 +1,9 @@
 Package: pmmlTransformations
 Type: Package
 Title: Transforms input data from a PMML perspective
-Version: 1.2.1
+Version: 1.2.2
 Date: 2013-10-10
-Author: Tridivesh Jena (Zementis, Inc.)
+Author: Tridivesh Jena, Wen Ching Lin (Zementis, Inc.)
 Maintainer: Tridivesh Jena <rpmmlsupport@zementis.net>
 Suggests: pmml
 Description: Allows for data to be transformed before using
@@ -11,7 +11,7 @@ Description: Allows for data to be transformed before using
 	the PMML package to output transformation details in 
 	addition to the model in the resulting PMML file.
 License: LGPL (>= 2.1)
-Packaged: 2013-10-10 16:12:04 UTC; tjena
+Packaged: 2014-06-17 01:10:25 UTC; tjena
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-10-22 10:05:12
+Date/Publication: 2014-06-17 08:24:31

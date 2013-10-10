@@ -61,6 +61,7 @@ Tridivesh Jena, Zementis, Inc.
 \examples{
 # Load the standard iris dataset, already available in R
    data(iris)
+   library(pmmlTransformations)
 
 # First wrap the data
    irisBox <- WrapData(iris)

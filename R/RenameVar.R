@@ -73,7 +73,10 @@ RenameVar <- function(boxdata,xformInfo=NA,...)
 	      row.names(boxData$fieldData)[coln2] <- derivedFieldName
 	      names(boxData$data)[coln2] <- derivedFieldName
 #new
-              names(boxData$matrixData)[coln2] <- derivedFieldName
+	      if(!is.null(boxData$matrixData))
+	      {
+               names(boxData$matrixData)[coln2] <- derivedFieldName
+	      }
             }
          } else
 	 {
@@ -92,13 +95,19 @@ RenameVar <- function(boxdata,xformInfo=NA,...)
             row.names(boxData$fieldData)[i] <- derivedFieldName
             names(boxData$data)[i] <- derivedFieldName
 #new
-            names(boxData$matrixData)[i] <- derivedFieldName
+            if(!is.null(boxData$matrixData))
+            {
+             names(boxData$matrixData)[i] <- derivedFieldName
+	    }
 	   } else
 	   {
             row.names(boxData$fieldData)[j] <- derivedFieldName
             names(boxData$data)[j] <- derivedFieldName
 #new
-	    names(boxData$matrixData)[j] <- derivedFieldName
+            if(!is.null(boxData$matrixData))
+            {
+	     names(boxData$matrixData)[j] <- derivedFieldName
+	    }
 	   }
 	 }
        }

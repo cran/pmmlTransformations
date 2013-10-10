@@ -6,8 +6,8 @@ This is in accordance to the PMML element:\cr \bold{Discretize}
 }
 \description{
 Creates a discrete variable from a continuous one. The discrete variable value depends on which interval
-the continuous variable value lies in. The mapping from intervals to discrete values is given 
-in an external table file referred to in the transform command.
+the continuous variable value lies in. The mapping from intervals to discrete values can be given 
+in an external table file referred to in the transform command or as a list of data frames.
 }
 \usage{
 DiscretizeXform(boxdata, xformInfo, table, defaultValue=NA, mapMissingTo=NA, ...)
@@ -16,11 +16,15 @@ DiscretizeXform(boxdata, xformInfo, table, defaultValue=NA, mapMissingTo=NA, ...
   \item{boxdata}{
    the wrapper object obtained by using the WrapData function on the raw data. 
   }
-  \item{xformInfo}{specification of details of the transformation.}
+  \item{xformInfo}{specification of details of the transformation. This may be a name of an external file 
+		or a list of data frames. Even if only 1 variable is to be transformed, the
+                information for that transform should be given as a list with 1 element.}
   \item{table}{name of external CSV file containing the map from input to output values.}
   \item{defaultValue}{value to be given to the transformed variable if the value of the input variable 
-	does not lie in any of the defined intervals.}
-  \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.}
+		does not lie in any of the defined intervals. If 'xformInfo' is a
+                list, this is a vector with each element corresponding to the corresponding list element.}
+  \item{mapMissingTo}{value to be given to the transformed variable if the value of the input variable is missing.
+		If 'xformInfo' is a list, this is a vector with each element corresponding to the corresponding list element.}
   \item{\dots}{
     further arguments passed to or from other methods.
   }
@@ -40,7 +44,7 @@ The data types of the variables can be any of the ones defined in the PMML forma
 double or string. \bold{defVal} is the default value of the transformed variable and if any of the input
 values are missing, \bold{missingVal} is the value of the transformed variable. 
 
-While TableFileName is required, the arguments InType, OutType, defaultValue and mapMissingTo 
+The arguments InType, OutType, defaultValue and mapMissingTo 
 are optional. The CSV file containing the table should not have any row and column identifiers, and the 
 values given must be in the same order as in the map command. If the data types of the variables are not 
 given, the data types of the input variables are attempted to be determined from the \bold{boxData} argument. 
@@ -66,6 +70,17 @@ which, given an input value \bold{inVal} and the output value to be calculated \
 	if( (inVal >  leftVal2) and (inVal <= rightVal4) ) out=outVal4 \cr
 	if(inVal > leftVal) out=outVal5 \cr
  
+It is also possible to give the information about the transforms without an external file, using a list of data frames. 
+Each data frame defines a discretization operation for 1 input variable. The first row of the data frame gives the 
+original field name, the derived field name, the left interval, the left value, the right interval and the right value.
+The second row gives the data type of the values as listed in the first row. The second row with
+the data types of the fields is not required. If not given, all fields are assumed to be strings. In this input format,
+the 'defaultValue' and 'mapMissingTo' parameters should be vectors. The first element of each vector will correspond
+to the derived field defined in the 1st element of the 'xformInfo' list etc. Although somewhat more complicated, this
+method is designed to not require any external features. Further, once the intial list is constructed, modifying it is 
+a simple operation; making this a better method to use if the parameters of the transformation are to be modified frequently
+and/or automatically. This is made more clear in the example below.
+
 }
 \value{
 R object containing the raw data, the transformed data and data statistics.
@@ -80,13 +95,13 @@ Tridivesh Jena, Zementis, Inc.
  \code{\link[pmml]{pmml}}
 }
 \examples{
-\dontrun{
 # Load the pmmlTransformations package
    library(pmmlTransformations)
-
+   library(pmml)
 # First wrap the data
    irisBox <- WrapData(iris)
 
+\dontrun{
 # We wish to convert the continuous variable "Sepal.Length" to a discrete variable "dsl"
 # The intervals to be used for this transformation is given in a file, "intervals.csv"
 # whose content is, for example,:
@@ -104,6 +119,47 @@ Tridivesh Jena, Zementis, Inc.
    irisBox <- DiscretizeXform(irisBox,xformInfo="[Sepal.Length -> dsl][double -> string]", 
 	table="intervals.csv",mapMissingTo="0")
 }
+
+# the same transformation using a list of data frames, of size 1.
+
+   t <- list()
+   m<-data.frame(c("Petal.Length","double","0]",NA,NA,NA,NA,"(4"),c("dis_pl","integer",0,1,2,3,4,5),
+   c("leftInterval","string","open","open","open","open","open","open"),
+   c("leftValue","double",NA,0,1,2,3,4),
+   c("rightInterval","string","Closed","Closed","Closed","Closed","Closed","Open"),
+   c("rightValue","double",0,1,2,3,4,NA))
+# Give column names to make it look nice; not necessary!
+   colnames(m) <- c("Petal.Length","dis_pl","leftInterval","leftValue","rightInterval","rightValue")
+
+# a textual representation of the data frame is:
+#   Petal.Length  dis_pl leftInterval leftValue rightInterval rightValue
+# 1 Petal.Length  dis_pl leftInterval leftValue rightInterval rightValue
+# 2       double integer       string    double        string     double
+# 3           0]       0         open      <NA>        Closed          0
+# 4         <NA>       1         open         0        Closed          1
+# 5         <NA>       2         open         1        Closed          2
+# 6         <NA>       3         open         2        Closed          3
+# 7         <NA>       4         open         3        Closed          4
+# 8           (4       5         open         4          Open       <NA>
+#
+# this is a transformation that defines a derived field 'dis_pl' which has the inter value '0' if 
+# the original field 'petal_length' has a value less or equal to 0. The derived field has a value 
+# '1' if the input is greater than 0 and less or equal to 1. Note that the values of the 1st column
+# after row2 has been deliberately given NA values in the middle. This is to show that that column 
+# is meant for a textual representation of the transformation as defined for the method involving 
+# external files; however in this method their values are not used.
+
+# Add the data frame to a list. The default values and the missing values should be given as a 
+# vector, each element of the vector corresponding to the element at the same index in the list.
+# If these values are not given as a vector, they will be used for the first list element only.
+  t[[1]] <- m
+  def <- c(11)
+  mis <- c(22)
+  
+  irisBox<-DiscretizeXform(irisBox,xformInfo=t,defaultValue=def,mapMissingTo=mis)
+#make a simple model to see the effect
+  fit<-lm(Petal.Width~.,irisBox$data[,-5])
+  pmml(fit,transforms=irisBox)
 
 }
 \keyword{ manip }

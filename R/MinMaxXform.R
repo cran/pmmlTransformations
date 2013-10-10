@@ -31,6 +31,7 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 	default <- NA
 	missingValue <- NA
 	colnamesGiven <- FALSE
+	columnFormat <- FALSE
         j <- 0
 
 	newBoxData <- Initialize(boxdata)
@@ -103,6 +104,10 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 		{
 			st2 <- strsplit(st[[1]][2],"\\[")
 			finalName <- st2[[1]][1]
+			if(finalName == "")
+			{
+			  finalName <- paste("derived_",origName,sep="")
+			}
 		}
 		# finalName is name of derived field 
 		
@@ -211,7 +216,6 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
                                 sampleMax <- maximum
 				transform <- "minmax"
                                 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
-
                                 newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 
 			}
@@ -239,7 +243,10 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 		newBoxData$data <- newMatrix
 		colLength <- length(names(newBoxData$data))
 
-       		newBoxData$matrixData <- cbind(newBoxData$matrixData,newBoxData$data[,j])
+		if(!is.null(newBoxData$matrixData))
+		{
+       		 newBoxData$matrixData <- cbind(newBoxData$matrixData,newBoxData$data[,j])
+		}
 		names(newBoxData$data)[i] <- name
 
 		newBoxData$fieldData[i,"centers"] <- attributes(xformed)$"scaled:center"[j]

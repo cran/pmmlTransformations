@@ -19,7 +19,7 @@
 #
 #---------------------------------------------------------------------------
 
-WrapData <-function(indata)
+WrapData <-function(indata,useMatrix=FALSE)
 {
 	dataBox <- NULL
 	fieldNames <- NULL
@@ -29,7 +29,13 @@ WrapData <-function(indata)
 	dataType <- NULL
 	origFieldName <- NULL
 
-	dataBox$matrixData <- as.matrix(indata)
+	if(useMatrix)
+ 	{
+	 dataBox$matrixData <- as.matrix(indata)
+	} else
+	{
+	  dataBox$matrixData <- NULL
+	}
         indatafrm <- data.frame(indata)
 	dataBox$data <- indatafrm
 	dataBox$nrows <- nrow(indatafrm)

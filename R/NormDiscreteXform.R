@@ -45,6 +45,7 @@ function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
 	newBoxData <- Initialize(boxdata)
 
 	dots <- list(...)
+
 	if(length(dots) != 0)
 	{
 		for(coln in dots)
@@ -189,6 +190,7 @@ function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
 #print(proc.time())
 	 newcol <- 1 * (newBoxData$data[,fromName] == catNames[i])
          newcol[is.na(newcol)] <- missingValue 
+
 #print("data END..")
 #print(proc.time())
        	 names <- toNames[i]
@@ -199,7 +201,10 @@ function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
      	 newBoxData$data <- data.frame(newBoxData$data,newmat,check.names=FALSE)
 
 #new
-	 newBoxData$matrixData <- cbind(newBoxData$matrixData,newmat)
+	 if(!is.null(newBoxData$matrixData))
+	 {
+	  newBoxData$matrixData <- cbind(newBoxData$matrixData,newmat)
+	 }
 	}
         newBoxData$fieldData[nrow(newBoxData$fieldData),"missingValue"] <- missingValue
 	newBoxData$fieldData[nrow(newBoxData$fieldData),"default"] <- default
