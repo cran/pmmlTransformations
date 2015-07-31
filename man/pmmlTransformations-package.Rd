@@ -47,18 +47,15 @@ This package does not support boolean dataTypes yet; only numeric and string dat
 Tridivesh Jena, Zementis, Inc.
 }
 \references{
-
-  PMML home page: \url{http://www.dmg.org}
+  \href{http://www.dmg.org}{PMML home page}
   
-  PMML page describing various possible data transformations:\cr
-   \url{http://www.dmg.org/v4-1/Transformations.html} 
+  \href{http://www.dmg.org/v4-1/Transformations.html}{PMML page describing various possible data transformations}
   
-  PMML Transformations Generator:\cr
-   \url{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}
+  \href{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}{PMML Transformations Generator}
   
   A. Guazzelli, W. Lin, T. Jena (2012), \emph{PMML in Action: Unleashing the Power  
      of Open Standards for Data Mining and Predictive Analytics}. CreativeSpace 
-     (Second Edition) - Available on Amazon.com - \url{http://www.amazon.com/dp/1470003244}.
+     (Second Edition) - \href{http://www.amazon.com/dp/1470003244}{Available on Amazon.com}
 
   T. Jena, A. Guazzelli, W. Lin, M. Zeller (2013). The R pmmlTransformations Package. 
      In \emph{Proceedings of the 19th ACM SIGKDD Conference on Knowledge Discovery 
@@ -72,16 +69,19 @@ Tridivesh Jena, Zementis, Inc.
 # First create the wrapper object
    irisBox <- WrapData(iris)
 
-# Perform a simple z-transformation on the first variable of the dataset: Sepal.Length
-# By default, the name of the transformed variable is "derived_Sepal.Length"
-# The information of the transformation is added back to the wrapped data object.
+# Perform a simple z-transformation on the first variable of the dataset: 
+# Sepal.Length. By default, the name of the transformed variable is 
+# "derived_Sepal.Length". The information of the transformation is added 
+# back to the wrapped data object.
    irisBox <- ZScoreXform(irisBox,"1")
 
 # Build a simple lm model 
-   fit <- lm(Sepal.Width ~ derived_Sepal.Length + Petal.Length, data=irisBox$data)
+   fit <- lm(Sepal.Width ~ derived_Sepal.Length + Petal.Length, 
+            data=irisBox$data)
 
-# One may now output the model in PMML format using the command below. The PMML file will 
-# now include the data transformations as well as the model. 
+# One may now output the model in PMML format using the command below.
+# The PMML file will now include the data transformations as well as 
+# the model. 
    library(pmml)
    fit_pmml <- pmml(fit, transform=irisBox)
 }

@@ -1,8 +1,8 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
-# This file is part of the pmmlTransformations package 
+# This file is part of the pmmlTransformations package.
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -18,7 +18,6 @@
 # Author: Tridivesh Jena
 #
 #---------------------------------------------------------------------------
-
 MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 {
 	colmn <- NULL
@@ -26,10 +25,13 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 	center <- NULL
 	scale <- NULL
 	centers <- NA
-        scales <- NA
+  scales <- NA
 	fieldsMap <- NA
 	default <- NA
 	missingValue <- NA
+  
+  functionXform <- NA
+  
 	colnamesGiven <- FALSE
 	columnFormat <- FALSE
         j <- 0
@@ -70,9 +72,9 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
 				sampleMin <- minimum
 				sampleMax <- maximum
 				transform <- "minmax"
-                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
-
-                                newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
+#         newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+        newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,functionXform,row.names=derivedFieldName)
+        newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			} 
 		}
 		d<-newBoxData$fieldData[names(newBoxData$data),"dataType"]
@@ -173,14 +175,13 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
        		                derivedFieldName <- finalName
 
 				xformedMin <- MIN
-                               	xformedMax <- MAX
-                               	sampleMin <- minimum
-                               	sampleMax <- maximum
+       	xformedMax <- MAX
+       	sampleMin <- minimum
+       	sampleMax <- maximum
 				transform <- "minmax"
-                               	newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
-
-
-                               	newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
+#         newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+				newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,functionXform,row.names=derivedFieldName)
+        newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 			}
 		} else
 		{
@@ -215,8 +216,9 @@ MinMaxXform <- function(boxdata,xformInfo=NA,mapMissingTo=NA,...)
                                 sampleMin <- minimum
                                 sampleMax <- maximum
 				transform <- "minmax"
-                                newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
-                                newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
+#         newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,row.names=derivedFieldName)
+				newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,functionXform,row.names=derivedFieldName)
+        newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow)
 
 			}
 		}

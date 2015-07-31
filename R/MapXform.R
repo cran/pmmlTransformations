@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package 
 #
@@ -33,11 +33,14 @@ MapXform <- function(boxdata,xformInfo,table=NA,defaultValue=NA,mapMissingTo=NA,
         centers <- NA
         scales <- NA
 	missingValue <- NA
+  
+  functionXform <- NA
+  
 	dataMatrix <- NULL
 	default <- NA
 
 	newBoxData <- Initialize(boxdata)
-
+  
 	if(!is.list(xformInfo))
  	{
 # EXTRACT DATA FROM xformInfo 
@@ -165,9 +168,9 @@ MapXform <- function(boxdata,xformInfo,table=NA,defaultValue=NA,mapMissingTo=NA,
 #EXTRACT DATA FROM table
 # read data from csv file
 	tabl <- as.character(table) 
-        file <- scan(tabl,what=character(0),sep=",")
+        file <- scan(tabl,what=character(0),sep=",",quiet=T)
         ndat <- length(file)
-        nrows <- length(scan(tabl,what=character(0),sep="\n"))
+        nrows <- length(scan(tabl,what=character(0),sep="\n",quiet=T))
         numcols <- ndat/nrows
         dataMatrix <- matrix(file,nrow=nrows,byrow=TRUE)
 
@@ -187,14 +190,19 @@ MapXform <- function(boxdata,xformInfo,table=NA,defaultValue=NA,mapMissingTo=NA,
 	rownames(dataMatrix) <- NULL
 
 	type <- "derived"
-	oFN <- NULL
-	for(i in 1:length(inVals))
-	{
-	 oFN <- c(oFN,inVals[i])
-	}
-	origFieldName <- list(oFN)
+##the following origFieldName assignment is replaced by one line below ( origFieldName <- paste(inVals,collapse=",") )
+# 	oFN <- NULL
+# 	for(i in 1:length(inVals))
+# 	{
+# 	oFN <- c(oFN,inVals[i])
+# 	}
+# 	origFieldName <- list(oFN)
 
-	if(is.null(outDat))
+
+#         origfieldName <- paste(inVals,collapse=",") #variable name is misspelled?
+  origFieldName <- paste(inVals,collapse=",") #variable name corrected; works for first documentation example but not for second
+
+  if(is.null(outDat))
 	{
 	 dataType <- "string"
 	} else
@@ -205,9 +213,10 @@ MapXform <- function(boxdata,xformInfo,table=NA,defaultValue=NA,mapMissingTo=NA,
 	transform <- "MapValues"
 	derivedFieldName <- outVal
 
-	suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
 
-	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
+# 	suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
+  suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,functionXform,row.names=derivedFieldName,check.names=FALSE))
+  suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
 	newcol <- NULL
 	newmatrixcol <- NULL
@@ -280,6 +289,8 @@ newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1
 
      col <- as.matrix(newcol)
      newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
+     if(outDat=="string")
+         newBoxData$data[,ncol(newBoxData$data)] <- as.factor(newBoxData$data[,ncol(newBoxData$data)])
      colnames(newBoxData$data)[ncol(newBoxData$data)] <- dataMatrix[1,ncol(dataMatrix)]
      rownames(newBoxData$data) <- NULL
 
@@ -311,7 +322,9 @@ newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1
 	orig <- as.matrix(xform[1,-ncol(xform)])
 	colnames(orig) <- NULL
 	rownames(orig) <- NULL
-	origFieldName <- list(orig) 
+	origFieldName <- list(orig) #this line is present in the current CRAN package
+#         origFieldName <- paste(xform,collapse=",") #pmml() function will break if using this line
+ 
 	derivedFieldName <- as.character(xform[1,ncol(xform)])
 	default <- defaultValue[k]
 	missingValue <- mapMissingTo[k]
@@ -331,9 +344,15 @@ newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1
 	  newBoxData$fieldData <- newBoxData$fieldData[-which(rownames(newBoxData$fieldData)==derivedFieldName),]
 	}
 
-	suppressWarnings(newrow <- data.frame("derived",outDat,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(list(as.matrix(xform))),"MapValues",defaultValue[k],mapMissingTo[k],row.names=derivedFieldName,check.names=FALSE))
- 	colnames(newrow)<-c("type","dataType","origFieldName","sampleMin","sampleMax","xformedMin","xformedMax","centers","scales","fieldsMap","transform","default","missingValue")
-        suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
+# 	suppressWarnings(newrow <- data.frame("derived",outDat,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(list(as.matrix(xform))),"MapValues",defaultValue[k],mapMissingTo[k],row.names=derivedFieldName,check.names=FALSE))
+#   colnames(newrow)<-c("type","dataType","origFieldName","sampleMin","sampleMax","xformedMin","xformedMax","centers","scales","fieldsMap","transform","default","missingValue")
+
+  suppressWarnings(newrow <- data.frame("derived",outDat,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(list(as.matrix(xform))),"MapValues",defaultValue[k],mapMissingTo[k],functionXform,row.names=derivedFieldName,check.names=FALSE))
+  colnames(newrow)<-c("type","dataType","origFieldName","sampleMin","sampleMax","xformedMin","xformedMax","centers","scales","fieldsMap","transform","default","missingValue","functionXform")
+
+
+
+  suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 #?need to convert xform to a matrix? 
 #?need to remove rownames?
 	dataMatrix <- as.matrix(xform)
@@ -422,6 +441,5 @@ newmatrixcol[apply(as.matrix(newBoxData$data[,dataMatrix[1,1:(ncol(dataMatrix)-1
         }
      }
     }
-
      return(newBoxData)
 }

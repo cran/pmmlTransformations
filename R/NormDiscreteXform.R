@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package 
 #
@@ -28,13 +28,14 @@ function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
 	colnamesGiven <- FALSE
         j <- 0
 	sampleMin <- NA
-        sampleMax<- NA
-        xformedMin <- NA
-        xformedMax <- NA
-        centers <- NA
-        scales <- NA
+  sampleMax<- NA
+  xformedMin <- NA
+  xformedMax <- NA
+  centers <- NA
+  scales <- NA
 	default <- NA
 	missingValue <- NA
+  functionXform <- NA
 
 	if(is.na(xformInfo) && is.na(inputVar))
 	  stop("xformInfo/inputVar parameter required.")
@@ -181,8 +182,11 @@ function(boxdata,xformInfo=NA,inputVar=NA,mapMissingTo=NA,...)
 	 fieldsMap <- list(as.character(catNames[i]))
 
 	 transform <- "NormDiscrete"
-	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE)
-	 suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
+	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,functionXform,row.names=derivedFieldName,check.names=FALSE)
+	 
+# 	 newrow <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,fieldsMap,transform,default,missingValue,functionXform,row.names=derivedFieldName)
+   
+   suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
 	 newcol <- NULL
 	 #for each row; ie piece of input data

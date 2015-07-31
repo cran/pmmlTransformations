@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package 
 #
@@ -18,6 +18,7 @@
 # Author: Tridivesh Jena
 #
 #---------------------------------------------------------------------------
+
 
 WrapData <-function(indata,useMatrix=FALSE)
 {
@@ -69,9 +70,27 @@ WrapData <-function(indata,useMatrix=FALSE)
 
 	}
 
-        # mark all original field names by type=original and origFieldName=NA 
-        df<-data.frame(type,dataType,origFieldName,row.names=fieldNames)
-        dataBox$fieldData <- df 
+    # mark all original field names by type=original and origFieldName=NA 
+#     df<-data.frame(type,dataType,origFieldName,row.names=fieldNames)
+
+    #add rest of fields with NA:
+    sampleMin <- NA
+    sampleMax <- NA
+    xformedMin <- NA
+    xformedMax <- NA
+    centers <- NA
+    scales <- NA
+    fieldsMap <- NA
+    transform <- NA
+    default <- NA
+    missingValue <- NA
+    functionXform <- NA
+
+
+    df <- data.frame(type,dataType,origFieldName,sampleMin,sampleMax,xformedMin,xformedMax,
+                     centers,scales,fieldsMap,transform,default,missingValue,functionXform,row.names=fieldNames)
+
+    dataBox$fieldData <- df 
 
 	return(dataBox)
 }

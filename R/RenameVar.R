@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package 
 #
@@ -27,7 +27,7 @@ RenameVar <- function(boxdata,xformInfo=NA,...)
 	colnm <- NULL 
  
 	boxData <- Initialize(boxdata)
-
+  
 	if(is.na(xformInfo))
 	{
 	  warning("No field name to rename found")

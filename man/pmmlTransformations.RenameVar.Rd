@@ -51,7 +51,8 @@ Tridivesh Jena, Zementis, Inc.
 # First wrap the data
    irisBox <- WrapData(iris)
 
-# We wish to refer to the variables "Sepal.Length" and "Sepal.Width" as "SL" and "SW"
+# We wish to refer to the variables "Sepal.Length" and 
+# "Sepal.Width" as "SL" and "SW"
   irisBox <- RenameVar(irisBox,"column1->SL")
   irisBox <- RenameVar(irisBox,"Sepal.Width->SW")
 

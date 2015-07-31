@@ -1,8 +1,8 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
-# This file is part of the pmmlTransformations package 
+# This file is part of the pmmlTransformations package. 
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -38,7 +38,8 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	default <- NA
 	missingValue <- NA
         sep <- ":"
-
+	functionXform <- NA
+  
 	newBoxData <- Initialize(boxdata)
 #	if(!is.numeric(newBoxData$data))
 #	  stop("Non-numeric matrices not yet supported for transformations")
@@ -151,9 +152,9 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 #EXTRACT DATA FROM table
 # read interval data from csv file
 	tabl <- as.character(table) 
-        file <- scan(tabl,what=character(0),sep=",")
+        file <- scan(tabl,what=character(0),sep=",",quiet=T)
         ndat <- length(file)
-        nrows <- length(scan(tabl,what=character(0),sep="\n"))
+        nrows <- length(scan(tabl,what=character(0),sep="\n",quiet=T))
         numcols <- ndat/nrows
         dataMatrix <- matrix(file,nrow=nrows,byrow=TRUE)
 
@@ -268,7 +269,9 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 
 	colnames(dataMatrix) <- dataMatrix[1,]
         fieldsMap <- list(dataMatrix)
-        suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
+#         suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,row.names=derivedFieldName,check.names=FALSE))
+        suppressWarnings(newrow <- data.frame(type,dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform,default,missingValue,functionXform,row.names=derivedFieldName,check.names=FALSE))
+
         suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
 	newBoxData <- .xformData(dataMatrix,default,missingValue,dataType,newBoxData)
@@ -295,8 +298,10 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
 	default <- defaultValue[k]
 	missingValue <- mapMissingTo[k]
 
-	suppressWarnings(newrow <- data.frame(type="derived",dataType=dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform="discretize",default,missingValue,row.names=derivedFieldName,check.names=FALSE))
-	suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
+# 	suppressWarnings(newrow <- data.frame(type="derived",dataType=dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform="discretize",default,missingValue,row.names=derivedFieldName,check.names=FALSE))
+	suppressWarnings(newrow <- data.frame(type="derived",dataType=dataType,I(origFieldName),sampleMin,sampleMax,xformedMin,xformedMax,centers,scales,I(fieldsMap),transform="discretize",default,missingValue,functionXform,row.names=derivedFieldName,check.names=FALSE))
+	
+  suppressWarnings(newBoxData$fieldData <- rbind(newBoxData$fieldData,newrow))
 
 	colnames(dataMatrix) <- dataMatrix[1,]
 
@@ -456,6 +461,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
      } else
      {
        newBoxData$data <- data.frame(newBoxData$data,col,check.names=FALSE)
+       newBoxData$data[,dim(newBoxData$data)[2]] <- as.factor(newBoxData$data[,dim(newBoxData$data)[2]]) 
      }
 #new
      if(!is.null(newBoxData$matrixData))

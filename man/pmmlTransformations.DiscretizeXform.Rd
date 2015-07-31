@@ -10,7 +10,8 @@ the continuous variable value lies in. The mapping from intervals to discrete va
 in an external table file referred to in the transform command or as a list of data frames.
 }
 \usage{
-DiscretizeXform(boxdata, xformInfo, table, defaultValue=NA, mapMissingTo=NA, ...)
+DiscretizeXform(boxdata, xformInfo, table, defaultValue=NA, 
+                mapMissingTo=NA, ...)
 }
 \arguments{
   \item{boxdata}{
@@ -31,7 +32,7 @@ DiscretizeXform(boxdata, xformInfo, table, defaultValue=NA, mapMissingTo=NA, ...
 }
 
 \details{
- Given a list of intervals and the discrete value each interval is linked to, a discrete variable is defined 
+Given a list of intervals and the discrete value each interval is linked to, a discrete variable is defined 
 with the value indicated by the interval where it lies in. If a continuous variable \bold{InVar} of data type 
 \bold{InType} is to be converted to a variable \bold{OutVar} of data type \bold{OutType}, the transformation command 
 is in the format:
@@ -42,7 +43,7 @@ is in the format:
 where \bold{TableFileName} is the name of the CSV file containing the interval to discrete value map. 
 The data types of the variables can be any of the ones defined in the PMML format including integer, 
 double or string. \bold{defVal} is the default value of the transformed variable and if any of the input
-values are missing, \bold{missingVal} is the value of the transformed variable. 
+values are missing, \bold{missingVal} is the value of the transformed variable.
 
 The arguments InType, OutType, defaultValue and mapMissingTo 
 are optional. The CSV file containing the table should not have any row and column identifiers, and the 
@@ -54,22 +55,20 @@ Intervals are either given by the left or right limits, in which case the other 
 infinite. It may also be given by both the left and right limits separated by the character ":". An example 
 of how intervals should be defined in the external file are:
 
-
    rightVal1),outVal1 \cr 
    rightVal2],outVal2 \cr
    [leftVal1:rightVal3),outVal3 \cr
    (leftVal2:rightVal4],outVal4 \cr
    (leftVal,outVal5
-
+   
 which, given an input value \bold{inVal} and the output value to be calculated \bold{out}, means that:
-
 
 	if(inVal <  rightVal1) out=outVal1 \cr
 	if(inVal <= rightVal2) out=outVal2 \cr
 	if( (inVal >= leftVal1) and (inVal < rightVal3) ) out=outVal3 \cr
 	if( (inVal >  leftVal2) and (inVal <= rightVal4) ) out=outVal4 \cr
-	if(inVal > leftVal) out=outVal5 \cr
- 
+	if(inVal > leftVal) out=outVal5
+
 It is also possible to give the information about the transforms without an external file, using a list of data frames. 
 Each data frame defines a discretization operation for 1 input variable. The first row of the data frame gives the 
 original field name, the derived field name, the left interval, the left value, the right interval and the right value.
@@ -80,7 +79,6 @@ to the derived field defined in the 1st element of the 'xformInfo' list etc. Alt
 method is designed to not require any external features. Further, once the intial list is constructed, modifying it is 
 a simple operation; making this a better method to use if the parameters of the transformation are to be modified frequently
 and/or automatically. This is made more clear in the example below.
-
 }
 \value{
 R object containing the raw data, the transformed data and data statistics.
@@ -96,70 +94,84 @@ Tridivesh Jena, Zementis, Inc.
 }
 \examples{
 # Load the pmmlTransformations package
-   library(pmmlTransformations)
-   library(pmml)
+    library(pmmlTransformations)
+    library(pmml)
 # First wrap the data
-   irisBox <- WrapData(iris)
+    irisBox <- WrapData(iris)
 
 \dontrun{
-# We wish to convert the continuous variable "Sepal.Length" to a discrete variable "dsl"
-# The intervals to be used for this transformation is given in a file, "intervals.csv"
-# whose content is, for example,:
+# We wish to convert the continuous variable "Sepal.Length" to a discrete
+# variable "dsl". The intervals to be used for this transformation is 
+# given in a file, "intervals.csv", whose content is, for example,:
 #
 #  5],val1
 #  (5:6],22
 #  (6,val2
 #
-# This will be used to create a disctere variable named "dsl" of dataType "string" such that:
+# This will be used to create a discrete variable named "dsl" of dataType
+# "string" such that:
 #    if(Sepal.length <= 5) then dsl = "val1"  
 #    if((Sepal.Lenght > 5) and (Sepal.Length <= 6)) then dsl = "22"
 #    if(Sepal.Length > 6) then dsl = "val2" 
 #
 # Give "dsl" the value 0 if the input variable value is missing.
-   irisBox <- DiscretizeXform(irisBox,xformInfo="[Sepal.Length -> dsl][double -> string]", 
-	table="intervals.csv",mapMissingTo="0")
+  irisBox <- DiscretizeXform(irisBox,
+              xformInfo="[Sepal.Length -> dsl][double -> string]", 
+              table="intervals.csv",mapMissingTo="0")
 }
 
-# the same transformation using a list of data frames, of size 1.
+# A different transformation using a list of data frames, of size 1:
+  t <- list()
+  m <- data.frame(rbind(
+                  c("Petal.Length","dis_pl","leftInterval","leftValue",
+                  "rightInterval","rightValue"),
+                  c("double","integer","string","double","string",
+                  "double"),
+                  c("0)",0,"open",NA,"Open",0),
+                  c(NA,1,"closed",0,"Open",1),
+                  c(NA,2,"closed",1,"Open",2),
+                  c(NA,3,"closed",2,"Open",3), 
+                  c(NA,4,"closed",3,"Open",4),
+                  c("[4",5,"closed",4,"Open",NA)))
 
-   t <- list()
-   m<-data.frame(c("Petal.Length","double","0]",NA,NA,NA,NA,"(4"),c("dis_pl","integer",0,1,2,3,4,5),
-   c("leftInterval","string","open","open","open","open","open","open"),
-   c("leftValue","double",NA,0,1,2,3,4),
-   c("rightInterval","string","Closed","Closed","Closed","Closed","Closed","Open"),
-   c("rightValue","double",0,1,2,3,4,NA))
 # Give column names to make it look nice; not necessary!
-   colnames(m) <- c("Petal.Length","dis_pl","leftInterval","leftValue","rightInterval","rightValue")
+  colnames(m) <- c("Petal.Length","dis_pl","leftInterval","leftValue",
+                  "rightInterval","rightValue")
 
 # a textual representation of the data frame is:
 #   Petal.Length  dis_pl leftInterval leftValue rightInterval rightValue
 # 1 Petal.Length  dis_pl leftInterval leftValue rightInterval rightValue
 # 2       double integer       string    double        string     double
-# 3           0]       0         open      <NA>        Closed          0
-# 4         <NA>       1         open         0        Closed          1
-# 5         <NA>       2         open         1        Closed          2
-# 6         <NA>       3         open         2        Closed          3
-# 7         <NA>       4         open         3        Closed          4
-# 8           (4       5         open         4          Open       <NA>
+# 3           0)       0         open      <NA>          Open          0
+# 4         <NA>       1       closed         0          Open          1
+# 5         <NA>       2       closed         1          Open          2
+# 6         <NA>       3       closed         2          Open          3
+# 7         <NA>       4       closed         3          Open          4
+# 8           (4       5       closed         4          Open       <NA>
 #
-# this is a transformation that defines a derived field 'dis_pl' which has the inter value '0' if 
-# the original field 'petal_length' has a value less or equal to 0. The derived field has a value 
-# '1' if the input is greater than 0 and less or equal to 1. Note that the values of the 1st column
-# after row2 has been deliberately given NA values in the middle. This is to show that that column 
-# is meant for a textual representation of the transformation as defined for the method involving 
-# external files; however in this method their values are not used.
+# This is a transformation that defines a derived field 'dis_pl' 
+# which has the integer value '0' if the original field 
+# 'Petal.Length' has a value less than 0. The derived field has a 
+# value '1' if the input is greater than or equal to 0 and less 
+# than 1. Note that the values of the 1st column after row 2 have 
+# been deliberately given NA values in the middle. This is to 
+# show that that column is meant for a textual representation of 
+# the transformation as defined for the method involving external 
+# files; however in this methodtheir values are not used.
 
-# Add the data frame to a list. The default values and the missing values should be given as a 
-# vector, each element of the vector corresponding to the element at the same index in the list.
-# If these values are not given as a vector, they will be used for the first list element only.
+# Add the data frame to a list. The default values and the missing
+# values should be given as a vector, each element of the vector 
+# corresponding to the element at the same index in the list. If 
+# these values are not given as a vector, they will be used for the 
+# first list element only.
   t[[1]] <- m
   def <- c(11)
   mis <- c(22)
-  
-  irisBox<-DiscretizeXform(irisBox,xformInfo=t,defaultValue=def,mapMissingTo=mis)
-#make a simple model to see the effect
+  irisBox<-DiscretizeXform(irisBox,xformInfo=t,defaultValue=def,
+                          mapMissingTo=mis)
+
+# Make a simple model to see the effect.
   fit<-lm(Petal.Width~.,irisBox$data[,-5])
   pmml(fit,transforms=irisBox)
-
 }
 \keyword{ manip }

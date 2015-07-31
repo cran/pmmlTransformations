@@ -1,8 +1,8 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2013 Zementis, Inc.
+# Copyright (c) 2015 Zementis, Inc.
 #
-# This file is part of the pmmlTransformations package 
+# This file is part of the pmmlTransformations package.
 #
 # The pmmlTransformations package is free: you can redistribute it and/or 
 # modify it under the terms of the GNU General Public License as published 
@@ -29,9 +29,12 @@ Initialize <- function(inbox)
         scales <- NULL
         fieldsMap <- NULL
         transform <- NULL
-	default <- NULL
-	missingValue <- NULL
+      	default <- NULL
+      	missingValue <- NULL
+        functionXform <- NULL
 
+#         print('start of Initialize')
+        
         if(is.null(inbox$fieldData[1,"xformedMax"]))
         {
                 for(i in 1:nrow(inbox$fieldData))
@@ -46,6 +49,8 @@ Initialize <- function(inbox)
                 inbox$fieldData <- cbind(inbox$fieldData,xformedMin)
                 inbox$fieldData <- cbind(inbox$fieldData,xformedMax)
         }
+        
+
 
         if(is.null(inbox$fieldData[1,"centers"]))
         {
@@ -86,6 +91,15 @@ Initialize <- function(inbox)
                 inbox$fieldData <- cbind(inbox$fieldData,default)
                 inbox$fieldData <- cbind(inbox$fieldData,missingValue)
         }
-
+  
+        if(is.null(inbox$fieldData[1,"functionXform"]))
+        {
+                for(i in 1:nrow(inbox$fieldData))
+                {
+                      functionXform <- c(functionXform,NA)
+                }
+                inbox$fieldData <- cbind(inbox$fieldData,functionXform)
+        }
+        
         return(inbox)
 }

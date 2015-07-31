@@ -41,12 +41,13 @@ Tridivesh Jena, Zementis, Inc.
 # Load the standard iris dataset, already built into R
    data(iris)
 
-# Make a wrapper object for the iris dataset to use with transformation functions
+# Make a wrapper object for the iris dataset to use with 
+# transformation functions
    irisBox <- WrapData(iris)
 
 # Output only the transformations in PMML format. 
-# This example will output just an empty "LocalTransformations" element as no transformations
-# were performed.
+# This example will output just an empty "LocalTransformations" 
+# element as no transformations were performed.
    library(pmml)
    pmml(NULL,transforms=irisBox)
 # This will also work
