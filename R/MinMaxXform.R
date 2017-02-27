@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2015 Zementis, Inc.
+# Copyright (c) 2017 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package.
 #

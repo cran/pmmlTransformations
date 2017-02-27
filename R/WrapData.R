@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2015 Zementis, Inc.
+# Copyright (c) 2017 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package 
 #
@@ -37,7 +37,12 @@ WrapData <-function(indata,useMatrix=FALSE)
 	{
 	  dataBox$matrixData <- NULL
 	}
-        indatafrm <- data.frame(indata)
+  if(!is.data.frame(indata)) {
+    indatafrm <- data.frame(indata)
+  } else {
+    indatafrm <- indata
+  }
+	
 	dataBox$data <- indatafrm
 	dataBox$nrows <- nrow(indatafrm)
 	dataBox$ncols <- ncol(indatafrm)

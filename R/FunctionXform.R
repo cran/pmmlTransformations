@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2015 Zementis, Inc.
+# Copyright (c) 2017 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package. 
 #
@@ -83,10 +83,12 @@ FunctionXform <- function (boxdata,origFieldName,newFieldName="newField",
 
   boxdata$data$newFieldName <- NA
   
+  parsed_text <- parse(text=formulaText)
+  
   ## This loop makes it possible to apply an if-else formula to the new data column.
   for (n in 1:length(boxdata$data$newFieldName)) {
     boxrow <- boxdata$data[n,]
-    boxdata$data$newFieldName[n] <- eval(parse(text=formulaText),boxrow)
+    boxdata$data$newFieldName[n] <- eval(parsed_text,boxrow)
   }
   
   names(boxdata$data)[names(boxdata$data)=="newFieldName"] <- newFieldName

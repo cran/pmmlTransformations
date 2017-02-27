@@ -24,13 +24,6 @@ Language (PMML) format through the use of the \bold{pmml} package.
   Teradata Aster) or Hadoop (Datameer and Hive). 
 }
 \details{
-\tabular{ll}{
-Package: \tab pmmlTransformations\cr
-Type: \tab Package\cr
-Version: \tab 1.2\cr
-Date: \tab 2013-08-20\cr
-License: \tab LGPL (>=2.1)\cr
-}
 The general methodology to use this package is to first wrap the data with the \bold{WrapData} function 
 and then perform all desired transformations. The model, in PMML format, including the information 
 on the transformations executed, can then be output by calling the \bold{pmml} function of the pmml package. 
@@ -49,7 +42,7 @@ Tridivesh Jena, Zementis, Inc.
 \references{
   \href{http://www.dmg.org}{PMML home page}
   
-  \href{http://www.dmg.org/v4-1/Transformations.html}{PMML page describing various possible data transformations}
+  \href{http://dmg.org/pmml/v4-3/Transformations.html}{PMML page describing various possible data transformations}
   
   \href{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}{PMML Transformations Generator}
   

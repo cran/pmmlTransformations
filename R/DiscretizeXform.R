@@ -1,6 +1,6 @@
 # PMML (Predictive Model Markup Language) Transformations 
 #
-# Copyright (c) 2015 Zementis, Inc.
+# Copyright (c) 2017 Zementis, Inc.
 #
 # This file is part of the pmmlTransformations package. 
 #
@@ -366,7 +366,7 @@ function(boxdata,xformInfo,table,defaultValue=NA,mapMissingTo=NA,...)
         origName <- colnames(dataMatrix)[1]
         derivedName <- colnames(dataMatrix)[2]
 
-         if(!is.numeric(newBoxData$data[1,1]))
+         if( newBoxData$fieldData[ origName,"dataType" ] != "numeric" )
            stop("Non-numeric matrices not yet supported for transformations")
 
 # Tridi: 9/20/13: Decided that values should be initialized to defaultt rather than missing
