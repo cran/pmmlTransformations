@@ -1,4 +1,4 @@
-e288f28cd07b8305e5a27eb73c8ef8cf *DESCRIPTION
+16caa4eeb17a09d826651a3975095fad *DESCRIPTION
 da5769643e9b7570744025ac95cb5e72 *NAMESPACE
 3501ea8d84db22ef12591c9d1135d6dc *R/DiscretizeXform.R
 c3a1bafa9aa316f60255642357f0c757 *R/FunctionXform.R
@@ -9,13 +9,13 @@ f07da8a0750162bd430fc68f422fa65d *R/NormDiscreteXform.R
 a70532b32d810b0646ecb9c5846b1f10 *R/RenameVar.R
 de6b50651f63e06bf5684a9d6a4f9296 *R/WrapData.R
 9a867ca99861bc81c425b7259216a96d *R/ZScoreXform.R
-74a01b0987e5c2d000d8479fba869085 *build/vignette.rds
-100e645e709dec24357ab32a4e71c3d2 *inst/ChangeLog
+525be5c2e4f6245be8b44a5b00c59b8b *build/vignette.rds
+8049be6e2349aea1f6fcbca1d8f88b06 *inst/ChangeLog
 bc05671fb47cfc28d5b065249adec7d8 *inst/doc/FunctionXform.R
 5d27ef1f2408400051b1e2d4f1797295 *inst/doc/FunctionXform.Rmd
-f73cb8fdf1f60111c110fb25d8c65aee *inst/doc/FunctionXform.html
+fcb66980771e21bab33285811939b426 *inst/doc/FunctionXform.html
 b0b710127f6ca4a38bfb4ab4ac9b5b2e *man/FunctionXform.Rd
-adead5d9ac8fd05ca1d0318dc0486c38 *man/pmmlTransformations-package.Rd
+5d0ce995a296dd9a14e687b0cd2537c3 *man/pmmlTransformations-package.Rd
 543af1375835b4fc0a11ef01a8248930 *man/pmmlTransformations.DiscretizeXform.Rd
 7ee51a6092e76fe4b48cc39251c7b2d8 *man/pmmlTransformations.Initialize.Rd
 e7ad669802055d21edf695074b8ea83d *man/pmmlTransformations.MapXform.Rd

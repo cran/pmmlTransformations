@@ -11,17 +11,7 @@ on the input data. The user can then use the derived data to construct models
 and output the model together with data transformations in the Predictive Model Markup
 Language (PMML) format through the use of the \bold{pmml} package. 
 
-  PMML is an XML based language which
-  provides a way for applications to define statistical and data mining
-  models and to share models between PMML compliant applications. More
-  information about PMML and the Data Mining Group can be found at
-  http://www.dmg.org.  
-  
-  The generated PMML can be imported into any PMML consuming
-  application, such as the Zementis ADAPA and UPPI scoring engines which allow for
-  predictive models built in R to be deployed and executed on site, in the cloud 
-  (Amazon, IBM, and FICO), in-database (IBM Netezza, Pivotal, Sybase IQ, Teradata and 
-  Teradata Aster) or Hadoop (Datameer and Hive). 
+PMML is an XML-based language which provides a way for applications to define machine learning, statistical and data mining models and to share models between PMML compliant applications. More information about the PMML industry standard and the Data Mining Group can be found at <http://www.dmg.org>. The generated PMML can be imported into any PMML consuming application, such as Zementis Predictive Analytics products, which integrate with web services, relational database systems and deploy natively on Hadoop in conjunction with Hive, Spark or Storm, as well as allow predictive analytics to be executed for IBM z Systems mainframe applications and real-time, streaming analytics platforms.
 }
 \details{
 The general methodology to use this package is to first wrap the data with the \bold{WrapData} function 
@@ -43,8 +33,6 @@ Tridivesh Jena, Zementis, Inc.
   \href{http://www.dmg.org}{PMML home page}
   
   \href{http://dmg.org/pmml/v4-3/Transformations.html}{PMML page describing various possible data transformations}
-  
-  \href{http://www.zementis.com/PMMLTransformations/PMMLTransformations.html}{PMML Transformations Generator}
   
   A. Guazzelli, W. Lin, T. Jena (2012), \emph{PMML in Action: Unleashing the Power  
      of Open Standards for Data Mining and Predictive Analytics}. CreativeSpace 
