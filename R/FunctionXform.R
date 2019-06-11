@@ -75,8 +75,8 @@
 #'          Sepal.Length.Transformed + Width.Sum, data=irisBox$data)
 #' 
 #' # Create pmml from the fit
-#' library(pmml)
-#' fit_pmml <- pmml(fit, transform=irisBox)
+#' # library(pmml)
+#' # fit_pmml <- pmml(fit, transform=irisBox)
 
 FunctionXform <- function (boxdata,origFieldName,newFieldName="newField",
                            newFieldDataType="numeric",formulaText,mapMissingTo=NA) {

@@ -32,14 +32,16 @@ kable(irisBox$fieldData[6,c(1:3,14)])
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Sepal.Length.Sqrt, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+
+# Convert to PMML:
+# fit_pmml <- pmml(fit, transform=irisBox)
 
 ## ------------------------------------------------------------------------
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 
 ## ------------------------------------------------------------------------
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 
 ## ------------------------------------------------------------------------
 irisBox <- WrapData(iris)
@@ -50,8 +52,8 @@ kable(head(irisBox$data,3))
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Species.Setosa, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 
 ## ------------------------------------------------------------------------
 irisBox <- WrapData(iris)
@@ -64,14 +66,16 @@ kable(head(irisBox$data,3))
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Length.Ratio, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+
+# Convert to pmml:
+# fit_pmml <- pmml(fit, transform=irisBox)
 
 ## ------------------------------------------------------------------------
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 
 ## ------------------------------------------------------------------------
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 
 ## ------------------------------------------------------------------------
 irisBox <- WrapData(iris)
@@ -86,15 +90,16 @@ kable(irisBox$fieldData[6:7,c(1:3,14)])
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Length.R.Times.S.Width, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+# Convert to pmml:
+# fit_pmml <- pmml(fit, transform=irisBox)
 
 
 ## ------------------------------------------------------------------------
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 
 ## ------------------------------------------------------------------------
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 
 ## ----echo=FALSE----------------------------------------------------------
 
@@ -127,8 +132,8 @@ kable(head(irisBox$data,3))
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Species.Setosa.or.Versicolor, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 
 ## ------------------------------------------------------------------------
 avg <- function(...) {
@@ -147,29 +152,29 @@ kable(head(irisBox$data,3))
 
 ## ------------------------------------------------------------------------
 fit <- lm(Petal.Width ~ Length.Average.Ratio, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 
 ## ------------------------------------------------------------------------
-functionToPMML("1 + 2")
+# functionToPMML("1 + 2")
 
-x <- 3
-functionToPMML("foo(bar(x * y))")
-
-## ------------------------------------------------------------------------
-functionToPMML("c(1,2,3)")
+# x <- 3
+# functionToPMML("foo(bar(x * y))")
 
 ## ------------------------------------------------------------------------
-functionToPMML("prod(1,2,na.rm=FALSE)") #produces incorrect PMML
-functionToPMML("prod(1,2)") #produces correct PMML
+# functionToPMML("c(1,2,3)")
 
 ## ------------------------------------------------------------------------
-prod(c(1,2,3))
-functionToPMML("prod(c(1,2,3))")
+# functionToPMML("prod(1,2,na.rm=FALSE)") #produces incorrect PMML
+# functionToPMML("prod(1,2)") #produces correct PMML
 
 ## ------------------------------------------------------------------------
-functionToPMML("pmmlT(((1+2))*(x))")
+# prod(c(1,2,3))
+# functionToPMML("prod(c(1,2,3))")
 
 ## ------------------------------------------------------------------------
-functionToPMML("if(a<2) {x+3} else if (a>4) {4} else {5}")
+# functionToPMML("pmmlT(((1+2))*(x))")
+
+## ------------------------------------------------------------------------
+# functionToPMML("if(a<2) {x+3} else if (a>4) {4} else {5}")
 

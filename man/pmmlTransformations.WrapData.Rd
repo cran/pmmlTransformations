@@ -48,8 +48,8 @@ Tridivesh Jena, Zementis, Inc.
 # Output only the transformations in PMML format. 
 # This example will output just an empty "LocalTransformations" 
 # element as no transformations were performed.
-   library(pmml)
-   pmml(NULL,transforms=irisBox)
+   # library(pmml)
+   # pmml(NULL,transforms=irisBox)
 # This will also work
-   pmml(,transforms=irisBox)
+   # pmml(,transforms=irisBox)
 }

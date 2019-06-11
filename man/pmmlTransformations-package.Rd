@@ -6,6 +6,8 @@
 Data Transformations for PMML output
 }
 \description{
+\bold{NOTE}: The functions in this package have been merged into the package \pkg{pmml}, starting with \pkg{pmml} 2.0.0. \pkg{pmmlTransformations} still works with \pkg{pmml} up to and including version 1.5.7, but will not receive any more updates. The examples throughout this package have (commented-out) calls to functions from \pkg{pmml}; if using \pkg{pmmlTransformations}, please use \pkg{pmml} 1.5.7 or older.
+
 This package reads in raw data and allows the user to perform various transformations 
 on the input data. The user can then use the derived data to construct models 
 and output the model together with data transformations in the Predictive Model Markup
@@ -24,7 +26,7 @@ This package can also be used as a transformation generator; output just the tra
 instead of the whole pmml model. To do so, one has to call the pmml function with the WrapData output but
 pass in a null value as the model name. An example can be seen in the documentation for the \bold{WrapData} function.
 
-This package does not support boolean dataTypes yet; only numeric and string data are supported.  
+This package does not support boolean dataTypes; only numeric and string data are supported.  
 }
 \author{
 Tridivesh Jena, Zementis, Inc.
@@ -63,6 +65,6 @@ Tridivesh Jena, Zementis, Inc.
 # One may now output the model in PMML format using the command below.
 # The PMML file will now include the data transformations as well as 
 # the model. 
-   library(pmml)
-   fit_pmml <- pmml(fit, transform=irisBox)
+   # library(pmml)
+   # fit_pmml <- pmml(fit, transform=irisBox)
 }

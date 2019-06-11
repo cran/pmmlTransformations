@@ -172,6 +172,6 @@ Tridivesh Jena, Zementis, Inc.
 
 # Make a simple model to see the effect.
   fit<-lm(Petal.Width~.,irisBox$data[,-5])
-  pmml(fit,transforms=irisBox)
+  # pmml(fit,transforms=irisBox)
 }
 \keyword{ manip }

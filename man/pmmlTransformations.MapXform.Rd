@@ -125,7 +125,7 @@ Tridivesh Jena, Zementis, Inc.
 
 # check what the pmml looks like
   fit<-lm(Adjusted~.,data=auditBox$data)
-  pmml(fit,transforms=auditBox)
+  # pmml(fit,transforms=auditBox)
 
 }
 \keyword{ manip }

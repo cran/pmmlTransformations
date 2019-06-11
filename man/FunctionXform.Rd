@@ -64,8 +64,8 @@ fit <- lm(Petal.Length ~
          Sepal.Length.Transformed + Width.Sum, data=irisBox$data)
 
 # Create pmml from the fit
-library(pmml)
-fit_pmml <- pmml(fit, transform=irisBox)
+# library(pmml)
+# fit_pmml <- pmml(fit, transform=irisBox)
 }
 \seealso{
 \code{\link{WrapData}}

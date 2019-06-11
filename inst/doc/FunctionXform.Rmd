@@ -1,7 +1,5 @@
 ---
 title: "Introduction to FunctionXform in PmmlTransformations"
-author: "Dmitriy Bolotov"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to FunctionXform}
@@ -12,6 +10,12 @@ vignette: >
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
+
+
+**NOTE**: The `pmml` package referenced in this vignette is assumed to be version `1.5.7`. Starting with `pmml 2.0.0`, functions from `pmmlTransformations` have been merged into `pmml`. The examples have (commented-out) calls to functions from `pmml`; if using `pmmlTransformations`, use `pmml 1.5.7` or older.
+
+For an updated version of this vignette, see the latest `pmml` package. 
+
 
 ## Introduction
 
@@ -72,22 +76,24 @@ kable(irisBox$fieldData[6,c(1:3,14)])
 ```
 
 
-Construct a linear model for `Petal.Width` using this new feature, and convert it to PMML:
+Construct a linear model for `Petal.Width` using this new feature:
 ```{r}
 fit <- lm(Petal.Width ~ Sepal.Length.Sqrt, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+
+# Convert to PMML:
+# fit_pmml <- pmml(fit, transform=irisBox)
 ```
 
 Since the model predicts `Petal.Width` using a variable based on `Sepal.Length`, the PMML will contain 
 these two fields in the `DataDictionary` and `MiningSchema`:
 ```{r}
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 ```
 
 The `LocalTransformations` node contains `Sepal.Length.Sqrt` as a derived field:
 ```{r}
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 ```
 
 ## Single categorical field
@@ -103,8 +109,8 @@ kable(head(irisBox$data,3))
 Create a linear model and check the `LocalTransformations` node:
 ```{r}
 fit <- lm(Petal.Width ~ Species.Setosa, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 ```
 
 ## Multiple input fields
@@ -122,21 +128,23 @@ As before, the new field is added as a column to the `irisBox$data` data frame:
 kable(head(irisBox$data,3))
 ```
 
-Fit a linear model using this new feature, and convert it to pmml:
+Fit a linear model using this new feature:
 ```{r}
 fit <- lm(Petal.Width ~ Length.Ratio, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+
+# Convert to pmml:
+# fit_pmml <- pmml(fit, transform=irisBox)
 ```
 
 The pmml will contain `Sepal.Length` and `Petal.Length` in the `DataDictionary` and `MiningSchema`, since these were used in `FormulaXform`:
 ```{r}
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 ```
 
 The `Local.Transformations` node contains `Length.Ratio` as a derived field:
 ```{r}
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 ```
 
 ## Using a previously derived feature
@@ -156,19 +164,20 @@ kable(irisBox$fieldData[6:7,c(1:3,14)])
 
 ```{r}
 fit <- lm(Petal.Width ~ Length.R.Times.S.Width, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
+# Convert to pmml:
+# fit_pmml <- pmml(fit, transform=irisBox)
 
 ```
 
 The pmml will contain `Sepal.Length`, `Petal.Length`, and `Sepal.Width` in the `DataDictionary` and `MiningSchema`, since these were used in `FormulaXform`:
 ```{r}
-fit_pmml[[2]] #Data Dictionary node
-fit_pmml[[3]][[1]] #Mining Schema node
+# fit_pmml[[2]] #Data Dictionary node
+# fit_pmml[[3]][[1]] #Mining Schema node
 ```
 
 The `Local.Transformations` node contains `Length.Ratio` and `Length.R.Times.S.Width` as derived fields:
 ```{r}
-fit_pmml[[3]][[3]]
+# fit_pmml[[3]][[3]]
 ```
 
 
@@ -232,8 +241,8 @@ kable(head(irisBox$data,3))
 Create a linear model and view the corresponding PMML for the function:
 ```{r}
 fit <- lm(Petal.Width ~ Species.Setosa.or.Versicolor, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 ```
 
 ## PMML Function not supported by `FunctionXform` - another example
@@ -259,8 +268,8 @@ kable(head(irisBox$data,3))
 Create a simple linear model and view the corresponding PMML for the function:
 ```{r}
 fit <- lm(Petal.Width ~ Length.Average.Ratio, data=irisBox$data)
-fit_pmml <- pmml(fit, transform=irisBox)
-fit_pmml[[3]][[3]]
+# fit_pmml <- pmml(fit, transform=irisBox)
+# fit_pmml[[3]][[3]]
 ```
 
 In the PMML, `avg` will be recognized as a valid function.
@@ -273,10 +282,10 @@ The function `functionToPMML` (part of the `pmml` package) makes it possible to 
 As long as the expression passed to the function is a valid R expression (e.g., no unbalanced parentheses), it can contain arbitrary function names not defined in R. Variables in the expression passed to `FunctionXform` are always assumed to be field names, and not substituted. That is, even if `x` has a value in the R environment, the resulting expression will still use `x`.
 
 ```{r}
-functionToPMML("1 + 2")
+# functionToPMML("1 + 2")
 
-x <- 3
-functionToPMML("foo(bar(x * y))")
+# x <- 3
+# functionToPMML("foo(bar(x * y))")
 ```
 
 
@@ -287,18 +296,18 @@ Each transformation operates on one data row at a time. For example, it is not p
 
 An expression such as `foo(x)` is treated as a function `foo` with argument `x`. Consequently, passing in an R vector `c(1,2,3)` will produce PMML where `c` is a function and `1,2,3` are the arguments:
 ```{r}
-functionToPMML("c(1,2,3)")
+# functionToPMML("c(1,2,3)")
 ```
 
 We can also see what happens when passing an `na.rm` argument to `prod`, as mentioned in an above example:
 ```{r}
-functionToPMML("prod(1,2,na.rm=FALSE)") #produces incorrect PMML
-functionToPMML("prod(1,2)") #produces correct PMML
+# functionToPMML("prod(1,2,na.rm=FALSE)") #produces incorrect PMML
+# functionToPMML("prod(1,2)") #produces correct PMML
 ```
 Additionally, passing in a vector to `prod` produces incorrect PMML:
 ```{r}
-prod(c(1,2,3))
-functionToPMML("prod(c(1,2,3))")
+# prod(c(1,2,3))
+# functionToPMML("prod(c(1,2,3))")
 ```
 
 
@@ -307,12 +316,12 @@ The following are additional examples of pmml produced from R expressions.
 
 Extra parentheses:
 ```{r}
-functionToPMML("pmmlT(((1+2))*(x))")
+# functionToPMML("pmmlT(((1+2))*(x))")
 ```
 
 If-else expressions:
 ```{r}
-functionToPMML("if(a<2) {x+3} else if (a>4) {4} else {5}")
+# functionToPMML("if(a<2) {x+3} else if (a>4) {4} else {5}")
 ```
 
 
